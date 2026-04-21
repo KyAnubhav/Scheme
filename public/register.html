@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Government Scheme & Student Welfare</title>
+    <link rel="stylesheet" href="register.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+</head>
+<body>
+
+    <div class="wrapper">
+        <div class="login-box">
+            
+            <div class="login-header">
+                <h1>Government Scheme &<br>Student Welfare</h1>
+                <p id="status-text">Create your account to get started</p>
+            </div>
+
+            <div id="registration-form">
+                <div id="message"></div>
+                <div class="input-group">
+                    
+                    <i class='bx bxs-user'></i>
+                    <input type="text" id="username" placeholder="Username" required>
+                </div>
+
+                <div class="input-group">
+                    <i class='bx bxs-envelope'></i>
+                    <input type="email" id="email" placeholder="Email" required>
+                </div>
+
+                <div class="input-group">
+                    <i class='bx bxs-phone'></i>
+                    <input type="text" id="phone" placeholder="Phone Number" required>
+                </div>
+
+                <div class="input-group">
+                    <i class='bx bxs-lock-alt'></i>
+                    <input type="password" id="password" placeholder="Password" required>
+                </div>
+
+                <button class="login-btn" onclick="register()">Send OTP</button>
+            </div>
+
+            <div id="otp-section" style="display: none;">
+                <input type="hidden" id="storedEmail">
+                <div class="otp-instruction">
+                    <p>Enter the 6-digit code sent to your email.</p>
+                </div>
+                
+                <div class="input-group">
+                    <i class='bx bxs-key'></i>
+                    <input type="text" id="emailOTP" placeholder="Enter Email OTP" required>
+                </div>
+
+                <button type="button" class="login-btn" onclick="verifyOTP()">Verify & Register</button>
+                
+                <div class="register-link">
+                    <p><a href="#" onclick="location.reload()">Back to Registration</a></p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
