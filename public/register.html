@@ -7,46 +7,65 @@
   <link rel="stylesheet" href="/styles.css" />
 </head>
 <body>
-  <div class="shell">
-    <div class="auth-wrap">
-      <div class="auth-left">
+  <div class="page">
+    <div class="shell">
+      <aside class="auth-left">
         <div>
           <div class="brand">
             <div class="brand-badge">G</div>
             <div>Government Scheme Portal</div>
           </div>
-          <h1 class="auth-title">Register once. Verify by email. Start getting matched.</h1>
-          <p style="margin-top:12px;max-width:520px">
-            After verification, complete your profile and let the portal find schemes that fit your details.
-          </p>
+          <h1 class="hero-title">Register once. Verify by email.</h1>
+          <p class="hero-copy">Complete your profile after login and the portal will match schemes automatically.</p>
         </div>
-        <div class="footer">OTP verification enabled</div>
-      </div>
+        <div class="hero-footer">OTP verification enabled</div>
+      </aside>
 
-      <div class="auth-right">
+      <main class="auth-right">
         <div class="auth-card">
-          <div>
-            <div class="kicker">Create account</div>
+          <div class="nav-title" style="margin-bottom: 18px;">
+            <p class="muted small">Create account</p>
             <h2>Register</h2>
-            <p>Fill details and request OTP.</p>
           </div>
 
-          <div class="field"><label>Name</label><input id="username" type="text" placeholder="Full name" /></div>
-          <div class="field"><label>Email</label><input id="email" type="email" placeholder="you@example.com" /></div>
-          <div class="field"><label>Phone</label><input id="phone" type="text" placeholder="10-digit phone number" /></div>
-          <div class="field"><label>Password</label><input id="password" type="password" placeholder="Create password" /></div>
+          <div class="grid">
+            <div class="field">
+              <label for="username">Name</label>
+              <input id="username" type="text" placeholder="Your name" autocomplete="name" />
+            </div>
+            <div class="field">
+              <label for="email">Email</label>
+              <input id="email" type="email" placeholder="you@example.com" autocomplete="email" />
+            </div>
+            <div class="field">
+              <label for="phone">Phone</label>
+              <input id="phone" type="tel" placeholder="10-digit phone" autocomplete="tel" />
+            </div>
+            <div class="field">
+              <label for="password">Password</label>
+              <input id="password" type="password" placeholder="Choose a password" autocomplete="new-password" />
+            </div>
+            <div class="btn-row">
+              <button class="btn" id="otpBtn" onclick="sendOtp()">Send OTP</button>
+            </div>
 
-          <button class="btn" onclick="sendOtp()">Send OTP</button>
+            <div id="otpArea" class="grid hide">
+              <div class="field">
+                <label for="otp">OTP</label>
+                <input id="otp" type="text" placeholder="Enter OTP" inputmode="numeric" />
+              </div>
+              <button class="btn success" id="verifyBtn" onclick="verifyOtp()">Verify &amp; Create Account</button>
+            </div>
 
-          <div id="otpArea" class="hide">
-            <div class="field"><label>OTP</label><input id="otp" type="text" placeholder="Enter 6-digit OTP" /></div>
-            <button class="btn success" onclick="verifyOtp()">Verify & Create Account</button>
+            <div class="msg" id="msg"></div>
+
+            <div class="link-row small">
+              <span class="muted">Already registered?</span>
+              <a href="/login.html">Login here</a>
+            </div>
           </div>
-
-          <p class="note">Already registered? <a href="/login.html">Login here</a></p>
-          <p id="msg" class="note"></p>
         </div>
-      </div>
+      </main>
     </div>
   </div>
 

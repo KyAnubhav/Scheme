@@ -1,16 +1,26 @@
 const token = localStorage.getItem("token");
 const role = localStorage.getItem("role");
-
 if (token && role) {
   window.location.href = role === "admin" ? "/admin.html" : "/dashboard.html";
 }
 
+function setBusy(busy) {
+  const btn = document.getElementById("loginBtn");
+  if (btn) btn.disabled = busy;
+}
+
 async function login() {
   const msg = document.getElementById("msg");
-  msg.textContent = "Signing in...";
-
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value;
+
+  if (!email || !password) {
+    msg.textContent = "Enter email and password.";
+    return;
+  }
+
+  msg.textContent = "Signing in...";
+  setBusy(true);
 
   try {
     const res = await fetch("/api/login", {
@@ -18,11 +28,11 @@ async function login() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password })
     });
-
     const data = await res.json();
 
     if (!data.success) {
-      msg.textContent = data.message || "Login failed";
+      msg.textContent = data.message || "Login failed.";
+      setBusy(false);
       return;
     }
 
@@ -34,5 +44,6 @@ async function login() {
     window.location.href = data.user.role === "admin" ? "/admin.html" : "/dashboard.html";
   } catch (err) {
     msg.textContent = err.message;
+    setBusy(false);
   }
 }

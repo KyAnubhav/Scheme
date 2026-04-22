@@ -7,107 +7,106 @@
   <link rel="stylesheet" href="/styles.css" />
 </head>
 <body>
-  <div class="panel">
+  <div class="content-pane">
     <div class="topbar">
       <div class="brand">
         <div class="brand-badge">A</div>
         <div>
-          <div>Admin Dashboard</div>
-          <div class="note">Manage schemes, eligibility, and alerts</div>
+          <div>Government Scheme Portal</div>
+          <div class="note">Admin dashboard</div>
         </div>
       </div>
-      <div class="nav-actions">
-        <button class="btn secondary" onclick="refreshAdmin()">Refresh</button>
-        <button class="btn danger" onclick="logout()">Logout</button>
+      <div class="btn-row">
+        <button class="btn secondary small" onclick="refreshAdmin()">Refresh</button>
+        <button class="btn danger small" onclick="logout()">Logout</button>
       </div>
     </div>
 
-    <div class="content">
-      <div class="hero">
-        <div class="kicker">Control center</div>
-        <h1>Add schemes with rules and notify eligible users automatically</h1>
-        <p>Use the form below to create a scheme, define required documents, and add rule-based eligibility.</p>
-        <div class="stats" id="adminStats"></div>
+    <div class="hero-panel card">
+      <div class="nav-title">
+        <p class="muted small">Control center</p>
+        <h1 style="margin:0;">Publish schemes and notify eligible users</h1>
+        <p class="note">Keep the form lean: one beneficiary type, clear dropdowns, no duplicate age section.</p>
+      </div>
+      <div class="stats" id="adminStats"></div>
+    </div>
+
+    <div class="section">
+      <div class="section-head">
+        <div>
+          <h3>Add scheme</h3>
+          <p class="note">Choose ministry, category, and the scheme basics.</p>
+        </div>
+        <button class="btn success" onclick="addRule()">Add rule</button>
       </div>
 
-      <div class="section card">
+      <div class="grid three">
+        <div class="field"><label for="scheme_code">Scheme code</label><input id="scheme_code" type="text" placeholder="SCH-2026-001"></div>
+        <div class="field"><label for="scheme_name">Scheme name</label><input id="scheme_name" type="text" placeholder="Scheme name"></div>
+        <div class="field"><label for="short_title">Short title</label><input id="short_title" type="text" placeholder="Short title"></div>
+
+        <div class="field"><label for="ministry_id">Ministry</label><select id="ministry_id"></select></div>
+        <div class="field"><label for="category_id">Category</label><select id="category_id"></select></div>
+        <div class="field"><label for="beneficiary_type">Beneficiary type</label><select id="beneficiary_type"></select></div>
+
+        <div class="field"><label for="application_mode">Application mode</label><select id="application_mode"><option value="online">Online</option><option value="offline">Offline</option><option value="both">Both</option></select></div>
+        <div class="field"><label for="benefit_type">Benefit type</label><select id="benefit_type"><option value="financial">Financial</option><option value="subsidy">Subsidy</option><option value="scholarship">Scholarship</option><option value="loan">Loan</option><option value="service">Service</option></select></div>
+        <div class="field"><label for="benefit_amount">Benefit amount</label><input id="benefit_amount" type="number" step="0.01" placeholder="10000"></div>
+
+        <div class="field"><label for="income_limit">Income limit</label><input id="income_limit" type="number" step="0.01" placeholder="200000"></div>
+        <div class="field"><label for="state_scope">State scope</label><select id="state_scope"><option value="National">National</option><option>Andhra Pradesh</option><option>Karnataka</option><option>Kerala</option><option>Tamil Nadu</option><option>Maharashtra</option><option>Gujarat</option><option>Telangana</option></select></div>
+        <div class="field"><label for="deadline">Deadline</label><input id="deadline" type="date"></div>
+
+        <div class="field"><label for="official_website">Official website</label><input id="official_website" type="url" placeholder="https://"></div>
+        <div class="field"><label for="application_link">Application link</label><input id="application_link" type="url" placeholder="https://"></div>
+        <div class="field"><label for="documents_link">Documents link</label><input id="documents_link" type="url" placeholder="https://"></div>
+      </div>
+
+      <div class="field" style="margin-top: 14px;">
+        <label for="description">Description</label>
+        <textarea id="description" placeholder="Short scheme description"></textarea>
+      </div>
+    </div>
+
+    <div class="grid two">
+      <div class="section">
         <div class="section-head">
           <div>
-            <h2>Add a scheme</h2>
-            <p class="note">Choose ministry, category, and define rules.</p>
+            <h3>Eligibility rules</h3>
+            <p class="note">No age fields here. Keep rules relevant and simple.</p>
           </div>
-          <button class="btn success" onclick="addRule()">Add eligibility rule</button>
+          <button class="btn secondary" onclick="addRule()">Add rule</button>
         </div>
-
-        <div class="form-grid three">
-          <div class="field"><label>Scheme code</label><input id="scheme_code" type="text" placeholder="SCH-2026-001"></div>
-          <div class="field"><label>Scheme name</label><input id="scheme_name" type="text" placeholder="Scheme name"></div>
-          <div class="field"><label>Short title</label><input id="short_title" type="text" placeholder="Short title"></div>
-
-          <div class="field"><label>Ministry</label><select id="ministry_id"></select></div>
-          <div class="field"><label>Category</label><select id="category_id"></select></div>
-          <div class="field"><label>Beneficiary type</label><input id="beneficiary_type" type="text" placeholder="student / farmer / women / disabled"></div>
-
-          <div class="field"><label>Application mode</label><input id="application_mode" type="text" value="online"></div>
-          <div class="field"><label>Benefit type</label><input id="benefit_type" type="text" placeholder="financial / subsidy / scholarship"></div>
-          <div class="field"><label>Benefit amount</label><input id="benefit_amount" type="number" step="0.01" placeholder="10000"></div>
-
-          <div class="field"><label>Income limit</label><input id="income_limit" type="number" step="0.01" placeholder="200000"></div>
-          <div class="field"><label>Age min</label><input id="age_min" type="number" placeholder="0"></div>
-          <div class="field"><label>Age max</label><input id="age_max" type="number" placeholder="60"></div>
-
-          <div class="field"><label>State scope</label><input id="state_scope" type="text" placeholder="National / Karnataka / India"></div>
-          <div class="field"><label>Launch date</label><input id="launch_date" type="date"></div>
-          <div class="field"><label>Deadline</label><input id="deadline" type="date"></div>
-
-          <div class="field"><label>Official website</label><input id="official_website" type="url" placeholder="https://..."></div>
-          <div class="field"><label>Application link</label><input id="application_link" type="url" placeholder="https://..."></div>
-          <div class="field"><label>Documents link</label><input id="documents_link" type="url" placeholder="https://..."></div>
-        </div>
-
-        <div class="section">
-          <div class="field">
-            <label>Description</label>
-            <textarea id="description" placeholder="Full scheme description"></textarea>
-          </div>
-        </div>
-
-        <div class="section">
-          <div class="section-head">
-            <div>
-              <h3>Eligibility rules</h3>
-              <p class="note">Add as many rows as needed. Mark mandatory rules carefully.</p>
-            </div>
-          </div>
-          <div id="rules" class="rule-box"></div>
-        </div>
-
-        <div class="section">
-          <div class="section-head">
-            <div>
-              <h3>Required documents</h3>
-              <p class="note">Add the documents applicants must have.</p>
-            </div>
-            <button class="btn secondary" onclick="addDocument()">Add document</button>
-          </div>
-          <div id="docs" class="rule-box"></div>
-        </div>
-
-        <div class="section">
-          <button class="btn" onclick="submitScheme()">Publish scheme</button>
-          <p id="msg" class="note" style="margin-top:12px;"></p>
-        </div>
+        <div id="rules" class="rule-box"></div>
       </div>
 
-      <div class="section card">
+      <div class="section">
         <div class="section-head">
           <div>
-            <h2>Published schemes</h2>
-            <p class="note">Everything you add appears here.</p>
+            <h3>Required documents</h3>
+            <p class="note">Add only the documents needed.</p>
           </div>
+          <button class="btn secondary" onclick="addDocument()">Add document</button>
         </div>
-        <div id="schemes" class="list"></div>
+        <div id="docs" class="rule-box"></div>
       </div>
+    </div>
+
+    <div class="section">
+      <div class="btn-row">
+        <button class="btn" onclick="submitScheme()">Publish scheme</button>
+      </div>
+      <div class="msg" id="msg"></div>
+    </div>
+
+    <div class="section">
+      <div class="section-head">
+        <div>
+          <h3>Published schemes</h3>
+          <p class="note">Everything you add appears here.</p>
+        </div>
+      </div>
+      <div id="schemes" class="list-grid"></div>
     </div>
   </div>
 

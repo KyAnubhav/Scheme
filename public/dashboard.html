@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="/styles.css" />
 </head>
 <body>
-  <div class="panel">
+  <div class="content-pane">
     <div class="topbar">
       <div class="brand">
         <div class="brand-badge">G</div>
@@ -16,35 +16,45 @@
           <div class="note">User dashboard</div>
         </div>
       </div>
-      <div class="nav-actions">
-        <button class="btn secondary" onclick="goProfile()">Profile</button>
-        <button class="btn secondary" onclick="refreshSchemes()">Refresh</button>
-        <button class="btn danger" onclick="logout()">Logout</button>
+      <div class="btn-row">
+        <button class="btn secondary small" onclick="goProfile()">Profile</button>
+        <button class="btn secondary small" onclick="refreshDashboard()">Refresh</button>
+        <button class="btn danger small" onclick="logout()">Logout</button>
       </div>
     </div>
 
-    <div class="content">
-      <div class="hero">
-        <div class="kicker">Your matches</div>
-        <h1>Eligible schemes based on your profile</h1>
-        <p>Complete your profile for better matching. The portal compares your details with every active scheme rule.</p>
-        <div class="stats" id="stats"></div>
+    <div class="hero-panel card">
+      <div class="nav-title">
+        <p class="muted small">Your matches</p>
+        <h1 style="margin:0;">Eligible schemes</h1>
+        <p class="note">Complete your profile to improve matching.</p>
       </div>
 
-      <div class="section">
-        <div class="section-head">
-          <div>
-            <h2>Filter schemes</h2>
-            <p class="note">Search and narrow the list instantly.</p>
-          </div>
+      <div class="stats" id="stats"></div>
+    </div>
+
+    <div class="section">
+      <div class="section-head">
+        <div>
+          <h3>Filters</h3>
+          <p class="note">Search and narrow the list.</p>
         </div>
-        <div class="toolbar">
-          <input id="search" class="search" type="text" placeholder="Search by scheme, ministry, category..." oninput="renderLists()" />
-          <select id="filterCategory" onchange="renderLists()">
-            <option value="">All categories</option>
+      </div>
+      <div class="filters">
+        <div class="field">
+          <label for="search">Search</label>
+          <input id="search" type="text" placeholder="Scheme name or ministry" oninput="renderSchemes()" />
+        </div>
+        <div class="field">
+          <label for="categoryFilter">Category</label>
+          <select id="categoryFilter" onchange="renderSchemes()">
+            <option value="">All</option>
           </select>
-          <select id="filterState" onchange="renderLists()">
-            <option value="">All states</option>
+        </div>
+        <div class="field">
+          <label for="stateFilter">State</label>
+          <select id="stateFilter" onchange="renderSchemes()">
+            <option value="">All</option>
             <option value="National">National</option>
             <option value="Andhra Pradesh">Andhra Pradesh</option>
             <option value="Karnataka">Karnataka</option>
@@ -55,39 +65,43 @@
             <option value="Telangana">Telangana</option>
           </select>
         </div>
-      </div>
-
-      <div class="grid">
-        <div class="card">
-          <div class="section-head">
-            <div>
-              <h2>Matched schemes</h2>
-              <p class="note">Schemes that fit your current profile rules.</p>
-            </div>
-          </div>
-          <div id="matched" class="list"></div>
-        </div>
-
-        <div class="card">
-          <div class="section-head">
-            <div>
-              <h2>Profile snapshot</h2>
-              <p class="note">This is what the engine uses for matching.</p>
-            </div>
-          </div>
-          <div id="profileSnapshot" class="item"></div>
+        <div class="field">
+          <label>&nbsp;</label>
+          <button class="btn" onclick="clearFilters()">Clear</button>
         </div>
       </div>
+    </div>
 
-      <div class="section card">
+    <div class="grid two">
+      <div class="section">
         <div class="section-head">
           <div>
-            <h2>All active schemes</h2>
-            <p class="note">Useful for browsing or checking eligibility manually.</p>
+            <h3>Matched schemes</h3>
+            <p class="note">Based on your profile.</p>
           </div>
         </div>
-        <div id="allSchemes" class="list"></div>
+        <div id="matchedSchemes" class="list-grid"></div>
       </div>
+
+      <div class="section">
+        <div class="section-head">
+          <div>
+            <h3>Profile snapshot</h3>
+            <p class="note">Used by the matcher.</p>
+          </div>
+        </div>
+        <div id="profileBox" class="list-grid"></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-head">
+        <div>
+          <h3>All active schemes</h3>
+          <p class="note">Browse everything in one place.</p>
+        </div>
+      </div>
+      <div id="allSchemes" class="list-grid"></div>
     </div>
   </div>
 

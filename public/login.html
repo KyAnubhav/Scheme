@@ -7,44 +7,44 @@
   <link rel="stylesheet" href="/styles.css" />
 </head>
 <body>
-  <div class="shell">
-    <div class="auth-wrap">
-      <div class="auth-left">
+  <div class="page">
+    <div class="shell">
+      <aside class="auth-left">
         <div>
           <div class="brand">
             <div class="brand-badge">G</div>
             <div>Government Scheme Portal</div>
           </div>
-          <h1 class="auth-title">Find the schemes you actually qualify for.</h1>
-          <p style="margin-top:12px;max-width:520px">
-            Secure login with OTP verification, profile-based matching, and admin-managed scheme publishing.
-          </p>
+          <h1 class="hero-title">Find the schemes you qualify for.</h1>
+          <p class="hero-copy">One login, one profile, and the portal does the matching.</p>
         </div>
-        <div class="footer">Built for SQL Server + Node.js</div>
-      </div>
-
-      <div class="auth-right">
+        <div class="hero-footer">OTP verification enabled</div>
+      </aside>
+      <main class="auth-right">
         <div class="auth-card">
-          <div>
-            <div class="kicker">Welcome back</div>
+          <div class="nav-title" style="margin-bottom: 18px;">
+            <p class="muted small">Welcome back</p>
             <h2>Login</h2>
-            <p>Use your verified email and password.</p>
           </div>
 
-          <div class="field">
-            <label>Email</label>
-            <input id="email" type="email" placeholder="you@example.com" />
+          <div class="grid">
+            <div class="field">
+              <label for="email">Email</label>
+              <input id="email" type="email" placeholder="you@example.com" autocomplete="email" />
+            </div>
+            <div class="field">
+              <label for="password">Password</label>
+              <input id="password" type="password" placeholder="••••••••" autocomplete="current-password" />
+            </div>
+            <button class="btn" id="loginBtn" onclick="login()">Login</button>
+            <div class="msg" id="msg"></div>
+            <div class="link-row small">
+              <span class="muted">New here?</span>
+              <a href="/register.html">Create an account</a>
+            </div>
           </div>
-          <div class="field">
-            <label>Password</label>
-            <input id="password" type="password" placeholder="Password" />
-          </div>
-
-          <button class="btn" onclick="login()">Login</button>
-          <p class="note">New here? <a href="/register.html">Create an account</a></p>
-          <p id="msg" class="note"></p>
         </div>
-      </div>
+      </main>
     </div>
   </div>
 

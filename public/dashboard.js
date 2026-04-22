@@ -1,15 +1,12 @@
 const token = localStorage.getItem("token");
-const role = localStorage.getItem("role");
-
 if (!token) window.location.href = "/login.html";
-if (role === "admin") window.location.href = "/admin.html";
 
-let allSchemes = [];
-let matchedSchemes = [];
-let profile = null;
+let matchedData = [];
+let allData = [];
+let profileData = null;
 
 function headers() {
-  return { Authorization: "Bearer " + token };
+  return { Authorization: `Bearer ${token}` };
 }
 
 function logout() {
@@ -21,127 +18,142 @@ function goProfile() {
   window.location.href = "/profile.html";
 }
 
-function calcAge(dob) {
-  if (!dob) return null;
-  const d = new Date(dob);
-  if (Number.isNaN(d.getTime())) return null;
-  const now = new Date();
-  let age = now.getFullYear() - d.getFullYear();
-  const m = now.getMonth() - d.getMonth();
-  if (m < 0 || (m === 0 && now.getDate() < d.getDate())) age--;
-  return age;
+function escapeHtml(str) {
+  return String(str ?? "").replace(/[&<>"]+/g, (m) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;"
+  })[m]);
 }
 
-function setStats() {
-  const box = document.getElementById("stats");
-  const profileComplete = profile ? Math.round(
-    ["dob","state","annual_family_income","education_level","occupation"].filter(k => profile[k]).length / 5 * 100
-  ) : 0;
-  box.innerHTML = `
-    <div class="stat"><div class="label">Matched schemes</div><div class="value">${matchedSchemes.length}</div></div>
-    <div class="stat"><div class="label">Active schemes</div><div class="value">${allSchemes.length}</div></div>
-    <div class="stat"><div class="label">Profile completeness</div><div class="value">${profileComplete}%</div></div>
-    <div class="stat"><div class="label">Age</div><div class="value">${profile?.dob ? calcAge(profile.dob) : "-"}</div></div>
-  `;
-}
-
-function schemeCard(s, matched) {
-  const deadline = s.deadline ? new Date(s.deadline).toLocaleDateString() : "Open";
+function schemeHtml(s, accent = "") {
   const state = s.state_scope || "National";
-  const badge = matched ? `<span class="chip green">Eligible</span>` : `<span class="chip yellow">Browse</span>`;
   return `
-    <div class="item">
-      <div class="meta">
-        ${badge}
-        <span class="chip">${s.category_name}</span>
-        <span class="chip">${s.ministry_name}</span>
-        <span class="chip">${state}</span>
+    <div class="scheme-card">
+      <div class="scheme-top">
+        <div>
+          <h4 class="scheme-title">${escapeHtml(s.scheme_name)}</h4>
+          <div class="badges">
+            <span class="badge">${escapeHtml(s.category_name || "Category")}</span>
+            <span class="badge gray">${escapeHtml(s.ministry_name || "Ministry")}</span>
+            <span class="badge green">${escapeHtml(state)}</span>
+          </div>
+        </div>
+        ${accent ? `<span class="badge">${escapeHtml(accent)}</span>` : ""}
       </div>
-      <h3>${s.scheme_name}</h3>
-      <p class="desc">${s.description || ""}</p>
-      <div class="meta">
-        <span class="chip">Benefit: ${s.benefit_type || "-"}</span>
-        <span class="chip">Limit: ${s.income_limit || "N/A"}</span>
-        <span class="chip">Deadline: ${deadline}</span>
+      <div class="scheme-meta">
+        <div><span>Beneficiary:</span> ${escapeHtml(s.beneficiary_type || "—")}</div>
+        <div><span>Benefit:</span> ${escapeHtml(s.benefit_type || "—")}${s.benefit_amount ? ` · ₹${escapeHtml(s.benefit_amount)}` : ""}</div>
+        <div><span>Income limit:</span> ${s.income_limit ? `₹${escapeHtml(s.income_limit)}` : "—"}</div>
+        <div><span>Deadline:</span> ${escapeHtml(s.deadline || "Open")}</div>
       </div>
-      <div class="actions">
-        <a class="btn" href="${s.application_link || s.official_website || "#"}" target="_blank">Open scheme</a>
+      <div class="scheme-actions">
+        ${s.application_link ? `<a class="btn small" href="${escapeHtml(s.application_link)}" target="_blank" rel="noopener">Apply</a>` : ""}
+        ${s.official_website ? `<a class="btn secondary small" href="${escapeHtml(s.official_website)}" target="_blank" rel="noopener">Website</a>` : ""}
       </div>
     </div>
   `;
 }
 
-function renderProfileSnapshot() {
-  const box = document.getElementById("profileSnapshot");
-  if (!profile) {
-    box.innerHTML = `<p>No profile saved yet.</p><p class="note">Go to Profile and complete the details.</p>`;
+function fillStats() {
+  const stats = document.getElementById("stats");
+  const values = [
+    ["Matched", matchedData.length],
+    ["Active", allData.length],
+    ["Profile", profileData ? "Complete" : "Missing"],
+    ["Role", localStorage.getItem("role") || "user"]
+  ];
+  stats.innerHTML = values.map(([label, value]) => `
+    <div class="stat">
+      <div class="label">${label}</div>
+      <div class="value">${value}</div>
+    </div>
+  `).join("");
+}
+
+function populateCategoryFilter() {
+  const sel = document.getElementById("categoryFilter");
+  const categories = [...new Set(allData.map(s => s.category_name).filter(Boolean))].sort();
+  sel.innerHTML = `<option value="">All</option>` + categories.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join("");
+}
+
+function renderSchemes() {
+  const q = document.getElementById("search").value.trim().toLowerCase();
+  const category = document.getElementById("categoryFilter").value;
+  const state = document.getElementById("stateFilter").value;
+
+  const matches = matchedData.filter((s) => {
+    const text = `${s.scheme_name} ${s.ministry_name || ""} ${s.category_name || ""}`.toLowerCase();
+    return (!q || text.includes(q)) && (!category || s.category_name === category) && (!state || (s.state_scope || "National") === state);
+  });
+  const all = allData.filter((s) => {
+    const text = `${s.scheme_name} ${s.ministry_name || ""} ${s.category_name || ""}`.toLowerCase();
+    return (!q || text.includes(q)) && (!category || s.category_name === category) && (!state || (s.state_scope || "National") === state);
+  });
+
+  document.getElementById("matchedSchemes").innerHTML = matches.length ? matches.map(s => schemeHtml(s, "Matched")).join("") : `<div class="card">No matching schemes yet.</div>`;
+  document.getElementById("allSchemes").innerHTML = all.length ? all.map(s => schemeHtml(s)).join("") : `<div class="card">No schemes found.</div>`;
+}
+
+function renderProfile() {
+  const box = document.getElementById("profileBox");
+  if (!profileData) {
+    box.innerHTML = `<div class="card">No profile found. Open Profile and add your details.</div>`;
     return;
   }
 
-  const age = calcAge(profile.dob);
-  box.innerHTML = `
-    <div class="meta" style="margin-bottom:10px;">
-      <span class="chip">State: ${profile.state || "-"}</span>
-      <span class="chip">Category: ${profile.category || "-"}</span>
-      <span class="chip">Age: ${age ?? "-"}</span>
+  const p = profileData;
+  const items = [
+    ["State", p.state || "—"],
+    ["District", p.district || "—"],
+    ["Income", p.annual_family_income ? `₹${p.annual_family_income}` : "—"],
+    ["Education", p.education_level || "—"],
+    ["Student", p.is_student ? "Yes" : "No"],
+    ["Farmer", p.is_farmer ? "Yes" : "No"],
+    ["Category", p.category || "—"],
+    ["Disability %", p.disability_percent ?? "—"]
+  ];
+
+  box.innerHTML = items.map(([label, value]) => `
+    <div class="scheme-card">
+      <div class="muted small">${escapeHtml(label)}</div>
+      <div style="font-weight:700; margin-top:6px;">${escapeHtml(value)}</div>
     </div>
-    <p><strong>Income:</strong> ${profile.annual_family_income ?? "-"}</p>
-    <p><strong>Occupation:</strong> ${profile.occupation || "-"}</p>
-    <p><strong>Education:</strong> ${profile.education_level || "-"}</p>
-    <p><strong>Student:</strong> ${profile.is_student ? "Yes" : "No"}</p>
-    <p><strong>Farmer:</strong> ${profile.is_farmer ? "Yes" : "No"}</p>
-    <p><strong>Disabled:</strong> ${profile.disability_percent ?? 0}%</p>
-  `;
+  `).join("");
 }
 
-function renderLists() {
-  const q = document.getElementById("search").value.trim().toLowerCase();
-  const cat = document.getElementById("filterCategory").value;
-  const state = document.getElementById("filterState").value;
-
-  const f = (s) => {
-    const text = `${s.scheme_name} ${s.description} ${s.ministry_name} ${s.category_name} ${s.state_scope || ""}`.toLowerCase();
-    if (q && !text.includes(q)) return false;
-    if (cat && s.category_name !== cat) return false;
-    if (state && (s.state_scope || "National") !== state) return false;
-    return true;
-  };
-
-  const matchedBox = document.getElementById("matched");
-  const allBox = document.getElementById("allSchemes");
-
-  const matched = matchedSchemes.filter(f);
-  const all = allSchemes.filter(f);
-
-  matchedBox.innerHTML = matched.length ? matched.map(s => schemeCard(s, true)).join("") : `<p>No matched schemes after filters.</p>`;
-  allBox.innerHTML = all.length ? all.map(s => schemeCard(s, matchedSchemes.some(m => m.id === s.id))).join("") : `<p>No schemes after filters.</p>`;
+function clearFilters() {
+  document.getElementById("search").value = "";
+  document.getElementById("categoryFilter").value = "";
+  document.getElementById("stateFilter").value = "";
+  renderSchemes();
 }
 
-async function refreshSchemes() {
+async function loadDashboard() {
   try {
-    const [profileRes, matchedRes, allRes, catRes] = await Promise.all([
-      fetch("/api/profile/me", { headers: headers() }),
+    const [matchedRes, allRes, profileRes] = await Promise.all([
       fetch("/api/schemes/matched", { headers: headers() }),
       fetch("/api/schemes/all", { headers: headers() }),
-      fetch("/api/meta/categories", { headers: headers() })
+      fetch("/api/profile/me", { headers: headers() })
     ]);
 
-    const profileData = await profileRes.json();
-    profile = profileData.profile;
+    matchedData = await matchedRes.json();
+    allData = await allRes.json();
+    const profileJson = await profileRes.json();
+    profileData = profileJson.profile;
 
-    matchedSchemes = await matchedRes.json();
-    allSchemes = await allRes.json();
-
-    const categories = await catRes.json();
-    const catSelect = document.getElementById("filterCategory");
-    catSelect.innerHTML = `<option value="">All categories</option>` + categories.map(c => `<option>${c.category_name}</option>`).join("");
-
-    setStats();
-    renderProfileSnapshot();
-    renderLists();
+    populateCategoryFilter();
+    renderProfile();
+    fillStats();
+    renderSchemes();
   } catch (err) {
-    document.getElementById("matched").innerHTML = `<p>${err.message}</p>`;
+    document.getElementById("matchedSchemes").innerHTML = `<div class="card">${escapeHtml(err.message)}</div>`;
   }
 }
 
-refreshSchemes();
+function refreshDashboard() {
+  loadDashboard();
+}
+
+loadDashboard();
