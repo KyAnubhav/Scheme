@@ -1,14 +1,11 @@
-let otpSent = false;
-
-function setBusy(buttonId, busy, text) {
-  const btn = document.getElementById(buttonId);
-  if (!btn) return;
-  btn.disabled = busy;
-  if (text) btn.textContent = text;
+function setMsg(text, good = false) {
+  const el = document.getElementById("msg");
+  if (!el) return;
+  el.className = good ? "notice good" : "small";
+  el.textContent = text || "";
 }
 
-async function sendOtp() {
-  const msg = document.getElementById("msg");
+async function register() {
   const payload = {
     username: document.getElementById("username").value.trim(),
     email: document.getElementById("email").value.trim(),
@@ -17,12 +14,11 @@ async function sendOtp() {
   };
 
   if (!payload.username || !payload.email || !payload.phone || !payload.password) {
-    msg.textContent = "Fill all fields.";
+    setMsg("Fill all fields.");
     return;
   }
 
-  msg.textContent = "Sending OTP...";
-  setBusy("otpBtn", true);
+  setMsg("Sending OTP...");
 
   try {
     const res = await fetch("/api/register", {
@@ -30,37 +26,29 @@ async function sendOtp() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload)
     });
-    const data = await res.json();
 
-    msg.textContent = data.message || "OTP sent.";
-    if (data.success) {
-      otpSent = true;
-      document.getElementById("otpArea").classList.remove("hide");
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      setMsg(data.message || "Could not send OTP.");
+      return;
     }
+
+    setMsg(data.message || "OTP sent to email.", true);
   } catch (err) {
-    msg.textContent = err.message;
-  } finally {
-    setBusy("otpBtn", false, "Send OTP");
+    setMsg(err.message || "Could not send OTP.");
   }
 }
 
 async function verifyOtp() {
-  const msg = document.getElementById("msg");
-  if (!otpSent) {
-    msg.textContent = "Send OTP first.";
-    return;
-  }
-
   const email = document.getElementById("email").value.trim();
   const emailOTP = document.getElementById("otp").value.trim();
 
-  if (!emailOTP) {
-    msg.textContent = "Enter the OTP.";
+  if (!email || !emailOTP) {
+    setMsg("Enter email and OTP.");
     return;
   }
 
-  msg.textContent = "Verifying...";
-  setBusy("verifyBtn", true);
+  setMsg("Verifying OTP...");
 
   try {
     const res = await fetch("/api/verify-otp", {
@@ -68,15 +56,16 @@ async function verifyOtp() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, emailOTP })
     });
-    const data = await res.json();
 
-    msg.textContent = data.message || "Done.";
-    if (data.success) {
-      setTimeout(() => window.location.href = "/login.html", 900);
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      setMsg(data.message || "OTP verification failed.");
+      return;
     }
+
+    setMsg(data.message || "Account created.", true);
+    setTimeout(() => window.location.href = "login.html", 800);
   } catch (err) {
-    msg.textContent = err.message;
-  } finally {
-    setBusy("verifyBtn", false, "Verify & Create Account");
+    setMsg(err.message || "OTP verification failed.");
   }
 }

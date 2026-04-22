@@ -1,26 +1,27 @@
 const token = localStorage.getItem("token");
-const role = localStorage.getItem("role");
-if (token && role) {
-  window.location.href = role === "admin" ? "/admin.html" : "/dashboard.html";
+
+if (token) {
+  const role = localStorage.getItem("role");
+  window.location.href = role === "admin" ? "admin.html" : "dashboard.html";
 }
 
-function setBusy(busy) {
-  const btn = document.getElementById("loginBtn");
-  if (btn) btn.disabled = busy;
+function setMsg(text, good = false) {
+  const el = document.getElementById("msg");
+  if (!el) return;
+  el.className = good ? "notice good" : "small";
+  el.textContent = text || "";
 }
 
 async function login() {
-  const msg = document.getElementById("msg");
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value;
 
   if (!email || !password) {
-    msg.textContent = "Enter email and password.";
+    setMsg("Enter email and password.");
     return;
   }
 
-  msg.textContent = "Signing in...";
-  setBusy(true);
+  setMsg("Signing in...");
 
   try {
     const res = await fetch("/api/login", {
@@ -28,22 +29,20 @@ async function login() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password })
     });
+
     const data = await res.json();
 
     if (!data.success) {
-      msg.textContent = data.message || "Login failed.";
-      setBusy(false);
+      setMsg(data.message || "Login failed.");
       return;
     }
 
     localStorage.setItem("token", data.token);
     localStorage.setItem("role", data.user.role);
-    localStorage.setItem("username", data.user.username);
-    localStorage.setItem("email", data.user.email);
 
-    window.location.href = data.user.role === "admin" ? "/admin.html" : "/dashboard.html";
+    setMsg("Login successful.", true);
+    window.location.href = data.user.role === "admin" ? "admin.html" : "dashboard.html";
   } catch (err) {
-    msg.textContent = err.message;
-    setBusy(false);
+    setMsg(err.message || "Login failed.");
   }
 }

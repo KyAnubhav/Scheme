@@ -1,53 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login | Government Scheme Portal</title>
-  <link rel="stylesheet" href="/styles.css" />
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="page">
-    <div class="shell">
-      <aside class="auth-left">
+  <div class="auth-shell">
+    <div class="card auth-card">
+      <div class="brand" style="margin-bottom:14px;">
+        <div class="brand-mark"></div>
         <div>
-          <div class="brand">
-            <div class="brand-badge">G</div>
-            <div>Government Scheme Portal</div>
-          </div>
-          <h1 class="hero-title">Find the schemes you qualify for.</h1>
-          <p class="hero-copy">One login, one profile, and the portal does the matching.</p>
+          <h2>Government Scheme Portal</h2>
+          <p>Sign in to continue</p>
         </div>
-        <div class="hero-footer">OTP verification enabled</div>
-      </aside>
-      <main class="auth-right">
-        <div class="auth-card">
-          <div class="nav-title" style="margin-bottom: 18px;">
-            <p class="muted small">Welcome back</p>
-            <h2>Login</h2>
-          </div>
+      </div>
 
-          <div class="grid">
-            <div class="field">
-              <label for="email">Email</label>
-              <input id="email" type="email" placeholder="you@example.com" autocomplete="email" />
-            </div>
-            <div class="field">
-              <label for="password">Password</label>
-              <input id="password" type="password" placeholder="••••••••" autocomplete="current-password" />
-            </div>
-            <button class="btn" id="loginBtn" onclick="login()">Login</button>
-            <div class="msg" id="msg"></div>
-            <div class="link-row small">
-              <span class="muted">New here?</span>
-              <a href="/register.html">Create an account</a>
-            </div>
-          </div>
+      <h1 class="auth-title">Login</h1>
+      <p class="auth-subtitle">Use your verified email and password.</p>
+
+      <div class="form-grid one">
+        <div>
+          <label for="email">Email</label>
+          <input id="email" type="email" placeholder="you@example.com">
         </div>
-      </main>
+        <div>
+          <label for="password">Password</label>
+          <input id="password" type="password" placeholder="••••••••">
+        </div>
+      </div>
+
+      <div class="btn-row" style="margin-top:14px;">
+        <button onclick="login()">Login</button>
+      </div>
+
+      <p class="auth-links">New here? <a href="register.html">Create an account</a></p>
+      <div id="msg" class="small" style="margin-top:10px;"></div>
     </div>
   </div>
-
-  <script src="/login.js"></script>
+  <script src="login.js"></script>
 </body>
 </html>

@@ -1,133 +1,135 @@
 const token = localStorage.getItem("token");
 const role = localStorage.getItem("role");
-if (!token) window.location.href = "/login.html";
-if (role !== "admin") window.location.href = "/dashboard.html";
+
+if (!token) window.location.href = "login.html";
+if (role !== "admin") window.location.href = "dashboard.html";
 
 const FIELD_OPTIONS = [
-  "annual_family_income",
-  "state",
-  "district",
-  "category",
-  "gender",
-  "marital_status",
-  "occupation",
-  "education_level",
-  "is_student",
-  "is_farmer",
-  "land_holding_acres",
-  "disability_percent",
-  "minority_status",
-  "women_headed_household",
-  "single_parent",
-  "currently_employed",
-  "aadhaar_verified",
-  "bank_account_linked"
+  { key: "annual_family_income", label: "Annual family income", type: "number", operators: ["<=", ">=", "="] },
+  { key: "disability_percent", label: "Disability percent", type: "number", operators: ["<=", ">=", "="] },
+  { key: "land_holding_acres", label: "Land holding acres", type: "number", operators: ["<=", ">=", "="] },
+  { key: "state", label: "State", type: "text", operators: ["="] },
+  { key: "district", label: "District", type: "text", operators: ["="] },
+  { key: "category", label: "Category", type: "text", operators: ["="] },
+  { key: "gender", label: "Gender", type: "text", operators: ["="] },
+  { key: "marital_status", label: "Marital status", type: "text", operators: ["="] },
+  { key: "occupation", label: "Occupation", type: "text", operators: ["="] },
+  { key: "education_level", label: "Education level", type: "text", operators: ["="] },
+  { key: "is_student", label: "Student", type: "boolean", operators: ["="] },
+  { key: "is_farmer", label: "Farmer", type: "boolean", operators: ["="] },
+  { key: "minority_status", label: "Minority status", type: "boolean", operators: ["="] },
+  { key: "women_headed_household", label: "Women-headed household", type: "boolean", operators: ["="] },
+  { key: "single_parent", label: "Single parent", type: "boolean", operators: ["="] },
+  { key: "currently_employed", label: "Currently employed", type: "boolean", operators: ["="] },
+  { key: "aadhaar_verified", label: "Aadhaar verified", type: "boolean", operators: ["="] },
+  { key: "bank_account_linked", label: "Bank account linked", type: "boolean", operators: ["="] }
 ];
 
-const BEN_TYPES = [
-  ["general", "General"],
-  ["student", "Student"],
-  ["farmer", "Farmer"],
-  ["women", "Women"],
-  ["disabled", "Disabled"],
-  ["minority", "Minority"],
-  ["senior_citizen", "Senior citizen"],
-  ["women_headed_household", "Women-headed household"]
+const BENEFICIARY_TYPES = [
+  "Individual",
+  "Household",
+  "Student",
+  "Farmer",
+  "Women",
+  "Persons with Disabilities",
+  "Senior Citizen",
+  "Institution"
 ];
 
 function headers() {
-  return {
-    Authorization: `Bearer ${token}`,
-    "Content-Type": "application/json"
-  };
-}
-
-function escapeHtml(str) {
-  return String(str ?? "").replace(/[&<>"]+/g, (m) => ({
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;"
-  })[m]);
+  return { Authorization: "Bearer " + token, "Content-Type": "application/json" };
 }
 
 function logout() {
   localStorage.clear();
-  window.location.href = "/login.html";
+  window.location.href = "login.html";
+}
+
+function fieldConfig(key) {
+  return FIELD_OPTIONS.find(f => f.key === key) || FIELD_OPTIONS[0];
+}
+
+function operatorOptionsFor(field) {
+  return fieldConfig(field).operators;
 }
 
 function ruleRow(rule = {}) {
   const row = document.createElement("div");
   row.className = "rule-row";
+
+  const fieldKey = rule.field_name || FIELD_OPTIONS[0].key;
+  const fieldOpts = FIELD_OPTIONS.map(f => `<option value="${f.key}" ${f.key === fieldKey ? "selected" : ""}>${f.label}</option>`).join("");
+  const ops = operatorOptionsFor(fieldKey)
+    .map(o => `<option value="${o}" ${o === (rule.operator_name || "=") ? "selected" : ""}>${o}</option>`)
+    .join("");
+
   row.innerHTML = `
-    <div class="field mini">
-      <label>Field</label>
-      <select class="field-name"></select>
+    <div class="rule-grid">
+      <div>
+        <label>Field</label>
+        <select class="field-name">${fieldOpts}</select>
+      </div>
+      <div>
+        <label>Operator</label>
+        <select class="operator-name">${ops}</select>
+      </div>
+      <div>
+        <label>Value</label>
+        <input class="value1" type="text" value="${rule.value1 || ""}" placeholder="Enter value">
+      </div>
+      <div style="display:flex; align-items:end;">
+        <button class="danger" type="button">Remove</button>
+      </div>
     </div>
-    <div class="field mini">
-      <label>Operator</label>
-      <select class="operator-name">
-        <option value="=">=</option>
-        <option value="!=">!=</option>
-        <option value="<"><</option>
-        <option value="<="><=</option>
-        <option value=">">&gt;</option>
-        <option value=">=">>=</option>
-        <option value="IN">IN</option>
-        <option value="BETWEEN">BETWEEN</option>
-        <option value="LIKE">LIKE</option>
-      </select>
-    </div>
-    <div class="field mini">
-      <label>Value 1</label>
-      <input class="value1" type="text" placeholder="Value">
-    </div>
-    <div class="field mini">
-      <label>Value 2</label>
-      <input class="value2" type="text" placeholder="Optional">
-    </div>
-    <button class="btn secondary small" type="button">Remove</button>
   `;
 
   const fieldSelect = row.querySelector(".field-name");
-  fieldSelect.innerHTML = FIELD_OPTIONS.map((f) => `<option value="${f}">${f}</option>`).join("");
-  fieldSelect.value = rule.field_name || FIELD_OPTIONS[0];
-  row.querySelector(".operator-name").value = rule.operator_name || "=";
-  row.querySelector(".value1").value = rule.value1 || "";
-  row.querySelector(".value2").value = rule.value2 || "";
+  const operatorSelect = row.querySelector(".operator-name");
+  const valueInput = row.querySelector(".value1");
+
+  function sync() {
+    const cfg = fieldConfig(fieldSelect.value);
+    operatorSelect.innerHTML = cfg.operators.map(o => `<option value="${o}">${o}</option>`).join("");
+    if (!cfg.operators.includes(operatorSelect.value)) operatorSelect.value = cfg.operators[0];
+    valueInput.type = cfg.type === "number" ? "number" : "text";
+    valueInput.placeholder = cfg.type === "boolean" ? "Use Yes/No, 1/0" : "Enter value";
+  }
+
+  fieldSelect.addEventListener("change", sync);
   row.querySelector("button").onclick = () => row.remove();
+  sync();
   return row;
 }
 
 function docRow(doc = {}) {
   const row = document.createElement("div");
-  row.className = "rule-row";
+  row.className = "doc-row";
   row.innerHTML = `
-    <div class="field mini">
-      <label>Document</label>
-      <input class="document-name" type="text" placeholder="Document name">
+    <div class="doc-grid">
+      <div>
+        <label>Document name</label>
+        <input class="document-name" type="text" value="${doc.document_name || ""}" placeholder="e.g. Aadhaar card">
+      </div>
+      <div>
+        <label>Code</label>
+        <input class="document-code" type="text" value="${doc.document_code || ""}" placeholder="e.g. ID01">
+      </div>
+      <div>
+        <label>Status</label>
+        <select class="mandatory">
+          <option value="1" ${doc.mandatory !== false ? "selected" : ""}>Mandatory</option>
+          <option value="0" ${doc.mandatory === false ? "selected" : ""}>Optional</option>
+        </select>
+      </div>
+      <div>
+        <label>Notes</label>
+        <input class="notes" type="text" value="${doc.notes || ""}" placeholder="Optional notes">
+      </div>
+      <div style="display:flex; align-items:end;">
+        <button class="danger" type="button">Remove</button>
+      </div>
     </div>
-    <div class="field mini">
-      <label>Code</label>
-      <input class="document-code" type="text" placeholder="Code">
-    </div>
-    <div class="field mini">
-      <label>Status</label>
-      <select class="mandatory">
-        <option value="1">Mandatory</option>
-        <option value="0">Optional</option>
-      </select>
-    </div>
-    <div class="field mini">
-      <label>Notes</label>
-      <input class="notes" type="text" placeholder="Notes">
-    </div>
-    <button class="btn secondary small" type="button">Remove</button>
   `;
-  row.querySelector(".document-name").value = doc.document_name || "";
-  row.querySelector(".document-code").value = doc.document_code || "";
-  row.querySelector(".mandatory").value = doc.mandatory === false ? "0" : "1";
-  row.querySelector(".notes").value = doc.notes || "";
   row.querySelector("button").onclick = () => row.remove();
   return row;
 }
@@ -142,10 +144,10 @@ function addDocument() {
 
 async function loadMeta() {
   const [minRes, catRes, overRes, schemeRes] = await Promise.all([
-    fetch("/api/meta/ministries", { headers: { Authorization: `Bearer ${token}` } }),
-    fetch("/api/meta/categories", { headers: { Authorization: `Bearer ${token}` } }),
-    fetch("/api/admin/overview", { headers: { Authorization: `Bearer ${token}` } }),
-    fetch("/api/admin/schemes", { headers: { Authorization: `Bearer ${token}` } })
+    fetch("/api/meta/ministries", { headers: headers() }),
+    fetch("/api/meta/categories", { headers: headers() }),
+    fetch("/api/admin/overview", { headers: headers() }),
+    fetch("/api/admin/schemes", { headers: headers() })
   ]);
 
   const ministries = await minRes.json();
@@ -153,43 +155,34 @@ async function loadMeta() {
   const overview = await overRes.json();
   const schemes = await schemeRes.json();
 
-  document.getElementById("ministry_id").innerHTML = ministries
-    .map((m) => `<option value="${m.id}">${escapeHtml(m.ministry_name)}</option>`).join("");
-  document.getElementById("category_id").innerHTML = categories
-    .map((c) => `<option value="${c.id}">${escapeHtml(c.category_name)}</option>`).join("");
-  document.getElementById("beneficiary_type").innerHTML = BEN_TYPES
-    .map(([value, label]) => `<option value="${value}">${label}</option>`).join("");
+  const ministrySelect = document.getElementById("ministry_id");
+  const categorySelect = document.getElementById("category_id");
+  const beneficiarySelect = document.getElementById("beneficiary_type");
 
-  document.getElementById("adminStats").innerHTML = `
-    <div class="stat"><div class="label">Users</div><div class="value">${overview.users}</div></div>
-    <div class="stat"><div class="label">Schemes</div><div class="value">${overview.schemes}</div></div>
-    <div class="stat"><div class="label">Profiles</div><div class="value">${overview.profiles}</div></div>
-    <div class="stat"><div class="label">Notifications</div><div class="value">${overview.notifications}</div></div>
-  `;
+  ministrySelect.innerHTML = `<option value="">Select ministry</option>` + ministries.map(m => `<option value="${m.id}">${m.ministry_name}</option>`).join("");
+  categorySelect.innerHTML = `<option value="">Select category</option>` + categories.map(c => `<option value="${c.id}">${c.category_name}</option>`).join("");
+  beneficiarySelect.innerHTML = BENEFICIARY_TYPES.map(v => `<option value="${v}">${v}</option>`).join("");
+
+  document.getElementById("statUsers").textContent = overview.users;
+  document.getElementById("statSchemes").textContent = overview.schemes;
+  document.getElementById("statNotifications").textContent = overview.notifications;
 
   const box = document.getElementById("schemes");
-  box.innerHTML = schemes.length
-    ? schemes.map((s) => `
-        <div class="scheme-card">
-          <div class="scheme-top">
-            <div>
-              <h4 class="scheme-title">${escapeHtml(s.scheme_name)}</h4>
-              <div class="badges">
-                <span class="badge">${escapeHtml(s.category_name)}</span>
-                <span class="badge gray">${escapeHtml(s.ministry_name)}</span>
-                <span class="badge green">${s.is_active ? "Active" : "Inactive"}</span>
-              </div>
-            </div>
-            <span class="badge">${escapeHtml(s.scheme_code)}</span>
-          </div>
-          <div class="scheme-meta">
-            <div><span>Beneficiary:</span> ${escapeHtml(s.beneficiary_type || "—")}</div>
-            <div><span>Limit:</span> ${s.income_limit ? `₹${escapeHtml(s.income_limit)}` : "—"}</div>
-            <div><span>Description:</span> ${escapeHtml(s.short_title || s.description || "")}</div>
-          </div>
-        </div>
-      `).join("")
-    : `<div class="card">No schemes yet.</div>`;
+  box.innerHTML = schemes.length ? schemes.map(s => `
+    <div class="scheme-card">
+      <div class="meta">
+        <span class="badge">${s.is_active ? "Active" : "Inactive"}</span>
+        <span class="badge">${s.category_name || "Category"}</span>
+        <span class="badge">${s.ministry_name || "Ministry"}</span>
+      </div>
+      <h5>${s.scheme_name}</h5>
+      <div class="desc">${s.short_title || s.description || "No description provided."}</div>
+      <div class="foot">
+        <span>Code: ${s.scheme_code}</span>
+        <span>Limit: ${s.income_limit ?? "N/A"}</span>
+      </div>
+    </div>
+  `).join("") : `<div class="notice">No schemes published yet.</div>`;
 }
 
 function refreshAdmin() {
@@ -198,23 +191,22 @@ function refreshAdmin() {
 
 async function submitScheme() {
   const msg = document.getElementById("msg");
-  msg.textContent = "Publishing...";
+  msg.textContent = "Publishing scheme...";
 
-  const rules = Array.from(document.querySelectorAll("#rules .rule-row")).map((row) => ({
+  const rules = Array.from(document.querySelectorAll("#rules .rule-row")).map(row => ({
     field_name: row.querySelector(".field-name").value,
     operator_name: row.querySelector(".operator-name").value,
-    value1: row.querySelector(".value1").value.trim(),
-    value2: row.querySelector(".value2").value.trim(),
+    value1: row.querySelector(".value1").value,
     mandatory: true,
     notes: ""
   }));
 
-  const required_documents = Array.from(document.querySelectorAll("#docs .rule-row")).map((row) => ({
-    document_name: row.querySelector(".document-name").value.trim(),
-    document_code: row.querySelector(".document-code").value.trim(),
+  const required_documents = Array.from(document.querySelectorAll("#docs .doc-row")).map(row => ({
+    document_name: row.querySelector(".document-name").value,
+    document_code: row.querySelector(".document-code").value,
     mandatory: row.querySelector(".mandatory").value === "1",
-    notes: row.querySelector(".notes").value.trim()
-  })).filter(d => d.document_name);
+    notes: row.querySelector(".notes").value
+  }));
 
   const body = {
     scheme_code: document.getElementById("scheme_code").value.trim() || `SCH-${Date.now()}`,
@@ -231,7 +223,7 @@ async function submitScheme() {
     income_limit: document.getElementById("income_limit").value || null,
     age_min: null,
     age_max: null,
-    state_scope: document.getElementById("state_scope").value,
+    state_scope: document.getElementById("state_scope").value.trim(),
     launch_date: null,
     start_date: null,
     end_date: null,
@@ -244,8 +236,8 @@ async function submitScheme() {
     required_documents
   };
 
-  if (!body.scheme_name || !body.description) {
-    msg.textContent = "Scheme name and description are required.";
+  if (!body.scheme_name || !body.description || !body.ministry_id || !body.category_id) {
+    msg.textContent = "Fill scheme name, description, ministry, and category.";
     return;
   }
 
@@ -256,16 +248,31 @@ async function submitScheme() {
       body: JSON.stringify(body)
     });
     const data = await res.json();
-    msg.textContent = data.message || "Done";
-    if (data.success) {
-      document.getElementById("rules").innerHTML = "";
-      document.getElementById("docs").innerHTML = "";
-      addRule();
-      addDocument();
-      await loadMeta();
+
+    if (!res.ok || !data.success) {
+      msg.textContent = data.message || "Could not publish scheme.";
+      return;
     }
+
+    msg.textContent = data.message || "Scheme published.";
+    document.getElementById("scheme_code").value = "";
+    document.getElementById("scheme_name").value = "";
+    document.getElementById("short_title").value = "";
+    document.getElementById("description").value = "";
+    document.getElementById("benefit_amount").value = "";
+    document.getElementById("income_limit").value = "";
+    document.getElementById("state_scope").value = "";
+    document.getElementById("deadline").value = "";
+    document.getElementById("official_website").value = "";
+    document.getElementById("application_link").value = "";
+    document.getElementById("documents_link").value = "";
+    document.getElementById("rules").innerHTML = "";
+    document.getElementById("docs").innerHTML = "";
+    addRule();
+    addDocument();
+    setTimeout(refreshAdmin, 800);
   } catch (err) {
-    msg.textContent = err.message;
+    msg.textContent = err.message || "Could not publish scheme.";
   }
 }
 
