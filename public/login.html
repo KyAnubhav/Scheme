@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login | Government Scheme Portal</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="shell">
+    <div class="auth-wrap">
+      <div class="auth-left">
+        <div>
+          <div class="brand">
+            <div class="brand-badge">G</div>
+            <div>Government Scheme Portal</div>
+          </div>
+          <h1 class="auth-title">Find the schemes you actually qualify for.</h1>
+          <p style="margin-top:12px;max-width:520px">
+            Secure login with OTP verification, profile-based matching, and admin-managed scheme publishing.
+          </p>
+        </div>
+        <div class="footer">Built for SQL Server + Node.js</div>
+      </div>
+
+      <div class="auth-right">
+        <div class="auth-card">
+          <div>
+            <div class="kicker">Welcome back</div>
+            <h2>Login</h2>
+            <p>Use your verified email and password.</p>
+          </div>
+
+          <div class="field">
+            <label>Email</label>
+            <input id="email" type="email" placeholder="you@example.com" />
+          </div>
+          <div class="field">
+            <label>Password</label>
+            <input id="password" type="password" placeholder="Password" />
+          </div>
+
+          <button class="btn" onclick="login()">Login</button>
+          <p class="note">New here? <a href="/register.html">Create an account</a></p>
+          <p id="msg" class="note"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/login.js"></script>
+</body>
+</html>

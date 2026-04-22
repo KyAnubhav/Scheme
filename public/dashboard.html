@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard | Government Scheme Portal</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="panel">
+    <div class="topbar">
+      <div class="brand">
+        <div class="brand-badge">G</div>
+        <div>
+          <div>Government Scheme Portal</div>
+          <div class="note">User dashboard</div>
+        </div>
+      </div>
+      <div class="nav-actions">
+        <button class="btn secondary" onclick="goProfile()">Profile</button>
+        <button class="btn secondary" onclick="refreshSchemes()">Refresh</button>
+        <button class="btn danger" onclick="logout()">Logout</button>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="hero">
+        <div class="kicker">Your matches</div>
+        <h1>Eligible schemes based on your profile</h1>
+        <p>Complete your profile for better matching. The portal compares your details with every active scheme rule.</p>
+        <div class="stats" id="stats"></div>
+      </div>
+
+      <div class="section">
+        <div class="section-head">
+          <div>
+            <h2>Filter schemes</h2>
+            <p class="note">Search and narrow the list instantly.</p>
+          </div>
+        </div>
+        <div class="toolbar">
+          <input id="search" class="search" type="text" placeholder="Search by scheme, ministry, category..." oninput="renderLists()" />
+          <select id="filterCategory" onchange="renderLists()">
+            <option value="">All categories</option>
+          </select>
+          <select id="filterState" onchange="renderLists()">
+            <option value="">All states</option>
+            <option value="National">National</option>
+            <option value="Andhra Pradesh">Andhra Pradesh</option>
+            <option value="Karnataka">Karnataka</option>
+            <option value="Kerala">Kerala</option>
+            <option value="Tamil Nadu">Tamil Nadu</option>
+            <option value="Maharashtra">Maharashtra</option>
+            <option value="Gujarat">Gujarat</option>
+            <option value="Telangana">Telangana</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="card">
+          <div class="section-head">
+            <div>
+              <h2>Matched schemes</h2>
+              <p class="note">Schemes that fit your current profile rules.</p>
+            </div>
+          </div>
+          <div id="matched" class="list"></div>
+        </div>
+
+        <div class="card">
+          <div class="section-head">
+            <div>
+              <h2>Profile snapshot</h2>
+              <p class="note">This is what the engine uses for matching.</p>
+            </div>
+          </div>
+          <div id="profileSnapshot" class="item"></div>
+        </div>
+      </div>
+
+      <div class="section card">
+        <div class="section-head">
+          <div>
+            <h2>All active schemes</h2>
+            <p class="note">Useful for browsing or checking eligibility manually.</p>
+          </div>
+        </div>
+        <div id="allSchemes" class="list"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/dashboard.js"></script>
+</body>
+</html>
