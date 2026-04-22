@@ -39,7 +39,6 @@ async function notifyEligibleUsers(schemeId) {
 
     try {
       await sendSchemeAlert(row.email, row.username, scheme);
-
       await db.request()
         .input("user_id", sql.Int, row.id)
         .input("scheme_id", sql.Int, schemeId)
@@ -210,10 +209,27 @@ router.post("/schemes", auth, requireRole("admin"), async (req, res) => {
 
     await tx.commit();
     await notifyEligibleUsers(schemeId);
-
     res.json({ success: true, message: "Scheme added successfully", schemeId });
   } catch (err) {
     await tx.rollback();
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+router.delete("/schemes/:id", auth, requireRole("admin"), async (req, res) => {
+  try {
+    const schemeId = Number(req.params.id);
+    if (!Number.isInteger(schemeId)) {
+      return res.status(400).json({ success: false, message: "Invalid scheme id" });
+    }
+
+    const db = await poolPromise;
+    await db.request()
+      .input("scheme_id", sql.Int, schemeId)
+      .query("DELETE FROM Schemes WHERE id = @scheme_id");
+
+    res.json({ success: true, message: "Scheme removed" });
+  } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
 });

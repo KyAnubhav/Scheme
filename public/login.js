@@ -1,15 +1,8 @@
-const token = localStorage.getItem("token");
-
-if (token) {
-  const role = localStorage.getItem("role");
-  window.location.href = role === "admin" ? "admin.html" : "dashboard.html";
-}
-
-function setMsg(text, good = false) {
-  const el = document.getElementById("msg");
-  if (!el) return;
-  el.className = good ? "notice good" : "small";
-  el.textContent = text || "";
+function setMsg(text, kind = "") {
+  const box = document.getElementById("msg");
+  box.style.display = "block";
+  box.className = `notice ${kind}`.trim();
+  box.textContent = text;
 }
 
 async function login() {
@@ -17,11 +10,9 @@ async function login() {
   const password = document.getElementById("password").value;
 
   if (!email || !password) {
-    setMsg("Enter email and password.");
+    setMsg("Enter email and password.", "warn");
     return;
   }
-
-  setMsg("Signing in...");
 
   try {
     const res = await fetch("/api/login", {
@@ -31,18 +22,16 @@ async function login() {
     });
 
     const data = await res.json();
-
     if (!data.success) {
-      setMsg(data.message || "Login failed.");
+      setMsg(data.message || "Login failed.", "error");
       return;
     }
 
     localStorage.setItem("token", data.token);
-    localStorage.setItem("role", data.user.role);
-
-    setMsg("Login successful.", true);
-    window.location.href = data.user.role === "admin" ? "admin.html" : "dashboard.html";
+    localStorage.setItem("role", data.user?.role || "user");
+    setMsg("Login successful.", "ok");
+    window.location.href = data.user?.role === "admin" ? "/admin.html" : "/dashboard.html";
   } catch (err) {
-    setMsg(err.message || "Login failed.");
+    setMsg(err.message || "Network error.", "error");
   }
 }

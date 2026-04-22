@@ -1,165 +1,134 @@
 const token = localStorage.getItem("token");
-const role = localStorage.getItem("role");
+if (!token) window.location.href = "/login.html";
 
-if (!token) window.location.href = "login.html";
-if (role === "admin") window.location.href = "admin.html";
-
-let profile = null;
-let matchedSchemes = [];
-let allSchemes = [];
+let matchedData = [];
+let allData = [];
+let profileData = null;
+let userData = null;
 
 function headers() {
-  return { Authorization: "Bearer " + token };
+  return { Authorization: `Bearer ${token}` };
 }
 
 function logout() {
   localStorage.clear();
-  window.location.href = "login.html";
+  window.location.href = "/login.html";
 }
 
-function goProfile() {
-  window.location.href = "profile.html";
+function escapeHtml(str) {
+  return String(str ?? "").replace(/[&<>"']/g, (m) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  }[m]));
 }
 
-function calcAge(dob) {
-  if (!dob) return null;
-  const d = new Date(dob);
-  if (Number.isNaN(d.getTime())) return null;
-  const now = new Date();
-  let age = now.getFullYear() - d.getFullYear();
-  const m = now.getMonth() - d.getMonth();
-  if (m < 0 || (m === 0 && now.getDate() < d.getDate())) age--;
-  return age;
-}
-
-function textForScheme(s) {
-  return `${s.scheme_name || ""} ${s.short_title || ""} ${s.description || ""} ${s.category_name || ""} ${s.state_scope || ""}`.toLowerCase();
-}
-
-function applyFilters() {
-  renderLists();
-}
-
-function clearFilters() {
-  document.getElementById("search").value = "";
-  document.getElementById("filterCategory").value = "";
-  renderLists();
-}
-
-function completeness() {
-  if (!profile) return 0;
-  const keys = ["dob","gender","marital_status","category","state","district","pincode","annual_family_income","occupation","education_level","is_student","is_farmer"];
-  const filled = keys.filter(k => {
-    const v = profile[k];
-    return v !== null && v !== undefined && v !== "";
-  }).length;
-  return Math.round((filled / keys.length) * 100);
-}
-
-function profileSnapshotHtml() {
-  if (!profile) {
-    return `<div class="notice warn">No profile saved yet. Add your details so scheme matching becomes accurate.</div>`;
-  }
-  const age = calcAge(profile.dob);
-  return `
-    <div class="badges" style="margin-bottom:10px;">
-      <span class="badge">State: ${profile.state || "-"}</span>
-      <span class="badge">Category: ${profile.category || "-"}</span>
-      <span class="badge">Age: ${age ?? "-"}</span>
-    </div>
-    <div class="small" style="line-height:1.8;">
-      <div><b>Email:</b> ${profile.email || "-"}</div>
-      <div><b>Income:</b> ${profile.annual_family_income ?? "-"}</div>
-      <div><b>Education:</b> ${profile.education_level || "-"}</div>
-      <div><b>Occupation:</b> ${profile.occupation || "-"}</div>
-      <div><b>Student:</b> ${profile.is_student ? "Yes" : "No"}</div>
-      <div><b>Farmer:</b> ${profile.is_farmer ? "Yes" : "No"}</div>
-      <div><b>Disability:</b> ${profile.disability_percent ?? "-"}%</div>
-    </div>
-  `;
-}
-
-function cardHtml(s, matched) {
+function schemeCard(s, tag = "") {
   const state = s.state_scope || "National";
-  const deadline = s.deadline ? new Date(s.deadline).toLocaleDateString() : "Open";
   return `
-    <div class="scheme-card">
+    <article class="scheme-card">
+      <div class="section-title" style="margin:0;align-items:flex-start;">
+        <div>
+          <h4>${escapeHtml(s.scheme_name)}</h4>
+          <div class="meta">
+            <span class="badge gray">${escapeHtml(s.category_name || "Category")}</span>
+            <span class="badge gray">${escapeHtml(s.ministry_name || "Ministry")}</span>
+            <span class="badge gray">${escapeHtml(state)}</span>
+          </div>
+        </div>
+        ${tag ? `<span class="badge green">${escapeHtml(tag)}</span>` : ""}
+      </div>
+      <p>${escapeHtml(s.short_title || s.description || "")}</p>
       <div class="meta">
-        <span class="badge">${matched ? "Matched" : "Active"}</span>
-        <span class="badge">${s.category_name || "General"}</span>
-        <span class="badge">${s.ministry_name || "Ministry"}</span>
-        <span class="badge">${state}</span>
+        <span>Beneficiary: ${escapeHtml(s.beneficiary_type || "—")}</span>
+        <span>Benefit: ${escapeHtml(s.benefit_type || "—")}${s.benefit_amount ? ` · ₹${escapeHtml(s.benefit_amount)}` : ""}</span>
+        <span>Income limit: ${s.income_limit ? `₹${escapeHtml(s.income_limit)}` : "—"}</span>
+        <span>Deadline: ${escapeHtml(s.deadline || "Open")}</span>
       </div>
-      <h5>${s.scheme_name || "-"}</h5>
-      <div class="desc">${s.short_title || s.description || "No description provided."}</div>
-      <div class="foot">
-        <span>Benefit: ${s.benefit_type || "-"}</span>
-        <span>Limit: ${s.income_limit ?? "N/A"}</span>
-        <span>Deadline: ${deadline}</span>
+      <div class="topbar-actions">
+        ${s.application_link ? `<a class="btn btn-primary btn-small" target="_blank" rel="noreferrer" href="${escapeHtml(s.application_link)}">Apply</a>` : ""}
+        ${s.official_website ? `<a class="btn btn-ghost btn-small" target="_blank" rel="noreferrer" href="${escapeHtml(s.official_website)}">Website</a>` : ""}
       </div>
-      <div class="btn-row" style="margin-top:12px;">
-        ${s.application_link ? `<a class="btn" href="${s.application_link}" target="_blank" rel="noopener">Apply</a>` : ""}
-        ${s.official_website ? `<a class="btn secondary" href="${s.official_website}" target="_blank" rel="noopener">Official site</a>` : ""}
-      </div>
+    </article>
+  `;
+}
+
+function renderStats() {
+  const stats = document.getElementById("stats");
+  const role = localStorage.getItem("role") || "user";
+  stats.innerHTML = [
+    ["Matched schemes", matchedData.length],
+    ["Active schemes", allData.length],
+    ["Profile", profileData ? "Saved" : "Missing"]
+  ].map(([label, value]) => `
+    <div class="kpi card">
+      <div class="label">${escapeHtml(label)}</div>
+      <div class="value">${escapeHtml(value)}</div>
+    </div>
+  `).join("");
+}
+
+function renderProfile() {
+  const box = document.getElementById("profileBox");
+  const status = document.getElementById("profileStatus");
+
+  if (!profileData) {
+    status.textContent = "Missing";
+    status.className = "badge red";
+    box.innerHTML = `<div class="empty">No profile found. Add your details to get scheme matches.</div>`;
+    return;
+  }
+
+  status.textContent = "Saved";
+  status.className = "badge green";
+
+  const p = profileData;
+  box.innerHTML = `
+    <div class="grid cols-2" style="gap:10px;">
+      <div><div class="small">State</div><strong>${escapeHtml(p.state || "—")}</strong></div>
+      <div><div class="small">District</div><strong>${escapeHtml(p.district || "—")}</strong></div>
+      <div><div class="small">Income</div><strong>${p.annual_family_income ? `₹${escapeHtml(p.annual_family_income)}` : "—"}</strong></div>
+      <div><div class="small">Category</div><strong>${escapeHtml(p.category || "—")}</strong></div>
+      <div><div class="small">Education</div><strong>${escapeHtml(p.education_level || "—")}</strong></div>
+      <div><div class="small">Student</div><strong>${p.is_student ? "Yes" : "No"}</strong></div>
     </div>
   `;
 }
 
-function setKpis() {
-  document.getElementById("kpiMatched").textContent = matchedSchemes.length;
-  document.getElementById("kpiActive").textContent = allSchemes.length;
-  document.getElementById("kpiProfile").textContent = `${completeness()}%`;
-}
+function renderSchemes() {
+  document.getElementById("matchedCount").textContent = matchedData.length;
+  document.getElementById("allCount").textContent = allData.length;
 
-function renderLists() {
-  const q = document.getElementById("search").value.trim().toLowerCase();
-  const cat = document.getElementById("filterCategory").value;
+  document.getElementById("matchedSchemes").innerHTML = matchedData.length
+    ? matchedData.map(s => schemeCard(s, "Matched")).join("")
+    : `<div class="empty">No matches yet. Complete your profile to see eligible schemes.</div>`;
 
-  const filtered = (s) => {
-    if (q && !textForScheme(s).includes(q)) return false;
-    if (cat && s.category_name !== cat) return false;
-    return true;
-  };
-
-  const matchedBox = document.getElementById("matched");
-  const allBox = document.getElementById("allSchemes");
-
-  const matched = matchedSchemes.filter(filtered);
-  const all = allSchemes.filter(filtered);
-
-  matchedBox.innerHTML = matched.length ? matched.map(s => cardHtml(s, true)).join("") : `<div class="notice">No matched schemes found.</div>`;
-  allBox.innerHTML = all.length ? all.map(s => cardHtml(s, matchedSchemes.some(m => m.id === s.id))).join("") : `<div class="notice">No active schemes found.</div>`;
+  document.getElementById("allSchemes").innerHTML = allData.length
+    ? allData.map(s => schemeCard(s)).join("")
+    : `<div class="empty">No active schemes available right now.</div>`;
 }
 
 async function loadDashboard() {
   try {
-    const [profileRes, matchedRes, allRes, catRes] = await Promise.all([
-      fetch("/api/profile/me", { headers: headers() }),
+    const [matchedRes, allRes, profileRes] = await Promise.all([
       fetch("/api/schemes/matched", { headers: headers() }),
       fetch("/api/schemes/all", { headers: headers() }),
-      fetch("/api/meta/categories", { headers: headers() })
+      fetch("/api/profile/me", { headers: headers() })
     ]);
 
-    const profileData = await profileRes.json();
-    const categories = await catRes.json();
+    matchedData = await matchedRes.json();
+    allData = await allRes.json();
+    const profileJson = await profileRes.json();
+    profileData = profileJson.profile;
+    userData = profileJson.user;
 
-    profile = profileData.profile || {};
-    if (profileData.user) profile.email = profileData.user.email;
-    matchedSchemes = await matchedRes.json();
-    allSchemes = await allRes.json();
-
-    const catSelect = document.getElementById("filterCategory");
-    catSelect.innerHTML = `<option value="">All categories</option>` + categories.map(c => `<option value="${c.category_name}">${c.category_name}</option>`).join("");
-
-    document.getElementById("profileSnapshot").innerHTML = profileSnapshotHtml();
-    document.getElementById("profileStatus").textContent = profileData.profile ? "Profile ready" : "Profile missing";
-    setKpis();
-    renderLists();
-
-    document.getElementById("search").addEventListener("input", renderLists);
-    document.getElementById("filterCategory").addEventListener("change", renderLists);
+    renderStats();
+    renderProfile();
+    renderSchemes();
   } catch (err) {
-    document.getElementById("matched").innerHTML = `<div class="notice bad">${err.message}</div>`;
+    document.getElementById("matchedSchemes").innerHTML = `<div class="empty">${escapeHtml(err.message)}</div>`;
   }
 }
 

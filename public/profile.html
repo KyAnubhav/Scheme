@@ -1,165 +1,75 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Profile | Government Scheme Portal</title>
-  <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Profile · Scheme Portal</title>
+  <link rel="stylesheet" href="/styles.css" />
 </head>
 <body>
-  <div class="topbar">
-    <div class="topbar-inner">
-      <div class="brand">
-        <div class="brand-mark"></div>
-        <div>
-          <h2>Government Scheme Portal</h2>
-          <p>Complete profile</p>
-        </div>
-      </div>
-      <div class="btn-row">
-        <button class="secondary" onclick="goBack()">Back</button>
-        <button onclick="saveProfile()">Save profile</button>
-      </div>
+  <header class="topbar">
+    <div class="brand">
+      <h2>Profile</h2>
+      <p>Fill the details used for scheme matching.</p>
     </div>
-  </div>
+    <div class="topbar-actions">
+      <a class="btn btn-ghost btn-small" href="/dashboard.html">Back</a>
+      <button class="btn btn-danger btn-small" onclick="logout()">Logout</button>
+    </div>
+  </header>
 
   <main class="page">
-    <section class="hero">
-      <h3>Profile</h3>
-      <p>Fill the fields that help the portal match the right schemes. Keep it simple and accurate.</p>
-    </section>
-
-    <div class="grid cols-2">
-      <section class="card">
+    <div class="split">
+      <section class="card stack">
         <div class="section-title">
-          <h4>Personal details</h4>
-          <span>Basic identity fields</span>
+          <h3>Account</h3>
+          <span class="badge gray" id="saveStatus">Loading</span>
         </div>
-        <div class="form-grid">
-          <div>
-            <label for="dob">Date of birth</label>
-            <input id="dob" type="date">
-          </div>
-          <div>
-            <label for="gender">Gender</label>
-            <select id="gender">
-              <option value="">Select</option>
-              <option>Male</option>
-              <option>Female</option>
-              <option>Other</option>
-            </select>
-          </div>
-          <div>
-            <label for="marital_status">Marital status</label>
-            <select id="marital_status">
-              <option value="">Select</option>
-              <option>Single</option>
-              <option>Married</option>
-              <option>Widowed</option>
-              <option>Divorced</option>
-            </select>
-          </div>
-          <div>
-            <label for="category">Category</label>
-            <select id="category">
-              <option value="">Select</option>
-              <option>General</option>
-              <option>OBC</option>
-              <option>SC</option>
-              <option>ST</option>
-              <option>EWS</option>
-            </select>
-          </div>
-        </div>
+        <div id="accountBox" class="empty">Loading profile…</div>
       </section>
 
-      <section class="card">
+      <section class="card stack">
         <div class="section-title">
-          <h4>Location</h4>
-          <span>Used for state-specific schemes</span>
+          <h3>Profile details</h3>
+          <button class="btn btn-primary btn-small" onclick="saveProfile()">Save profile</button>
         </div>
-        <div class="form-grid">
-          <div>
-            <label for="state">State</label>
-            <input id="state" type="text" placeholder="State">
-          </div>
-          <div>
-            <label for="district">District</label>
-            <input id="district" type="text" placeholder="District">
-          </div>
-          <div>
-            <label for="pincode">Pincode</label>
-            <input id="pincode" type="text" placeholder="Pincode">
-          </div>
-        </div>
-      </section>
 
-      <section class="card">
-        <div class="section-title">
-          <h4>Education and income</h4>
-          <span>Helps with scholarships and support schemes</span>
+        <div class="profile-grid cols-2">
+          <div><label for="dob">Date of birth</label><input id="dob" type="date" /></div>
+          <div><label for="gender">Gender</label><select id="gender"><option value="">Select</option><option>Male</option><option>Female</option><option>Other</option></select></div>
+          <div><label for="marital_status">Marital status</label><select id="marital_status"><option value="">Select</option><option>Single</option><option>Married</option><option>Widowed</option><option>Divorced</option></select></div>
+          <div><label for="category">Category</label><select id="category"><option value="">Select</option><option>General</option><option>OBC</option><option>SC</option><option>ST</option><option>EWS</option></select></div>
+          <div><label for="state">State</label><input id="state" placeholder="State" /></div>
+          <div><label for="district">District</label><input id="district" placeholder="District" /></div>
+          <div><label for="pincode">Pincode</label><input id="pincode" placeholder="Pincode" /></div>
+          <div><label for="annual_family_income">Annual family income</label><input id="annual_family_income" type="number" min="0" placeholder="Income" /></div>
+          <div><label for="occupation">Occupation</label><input id="occupation" placeholder="Occupation" /></div>
+          <div><label for="education_level">Education level</label><input id="education_level" placeholder="Education level" /></div>
+          <div><label for="institution_name">Institution name</label><input id="institution_name" placeholder="Institution name" /></div>
+          <div><label for="course_name">Course name</label><input id="course_name" placeholder="Course name" /></div>
+          <div><label for="land_holding_acres">Land holding acres</label><input id="land_holding_acres" type="number" step="0.01" min="0" placeholder="Acres" /></div>
+          <div><label for="disability_percent">Disability percent</label><input id="disability_percent" type="number" min="0" max="100" placeholder="0 - 100" /></div>
         </div>
-        <div class="form-grid">
-          <div>
-            <label for="annual_family_income">Annual family income</label>
-            <input id="annual_family_income" type="number" min="0" placeholder="Income">
-          </div>
-          <div>
-            <label for="education_level">Education level</label>
-            <input id="education_level" type="text" placeholder="Education level">
-          </div>
-          <div>
-            <label for="institution_name">Institution name</label>
-            <input id="institution_name" type="text" placeholder="Institution name">
-          </div>
-          <div>
-            <label for="course_name">Course name</label>
-            <input id="course_name" type="text" placeholder="Course name">
-          </div>
-        </div>
-      </section>
 
-      <section class="card">
-        <div class="section-title">
-          <h4>Work and eligibility signals</h4>
-          <span>Keep only what matters</span>
-        </div>
-        <div class="form-grid">
-          <div>
-            <label for="occupation">Occupation</label>
-            <input id="occupation" type="text" placeholder="Occupation">
-          </div>
-          <div>
-            <label for="land_holding_acres">Land holding (acres)</label>
-            <input id="land_holding_acres" type="number" min="0" step="0.01">
-          </div>
-          <div>
-            <label for="disability_percent">Disability %</label>
-            <input id="disability_percent" type="number" min="0" max="100">
+        <div>
+          <label>Quick flags</label>
+          <div class="toggle-row">
+            <label class="toggle"><input id="is_student" type="checkbox" /> Student</label>
+            <label class="toggle"><input id="is_farmer" type="checkbox" /> Farmer</label>
+            <label class="toggle"><input id="minority_status" type="checkbox" /> Minority status</label>
+            <label class="toggle"><input id="women_headed_household" type="checkbox" /> Women-headed household</label>
+            <label class="toggle"><input id="single_parent" type="checkbox" /> Single parent</label>
+            <label class="toggle"><input id="currently_employed" type="checkbox" /> Currently employed</label>
+            <label class="toggle"><input id="aadhaar_verified" type="checkbox" /> Aadhaar verified</label>
+            <label class="toggle"><input id="bank_account_linked" type="checkbox" /> Bank account linked</label>
           </div>
         </div>
 
-        <div class="btn-row" style="margin-top:14px;">
-          <label><input id="is_student" type="checkbox" style="width:auto;margin-right:8px;">Student</label>
-          <label><input id="is_farmer" type="checkbox" style="width:auto;margin-right:8px;">Farmer</label>
-          <label><input id="minority_status" type="checkbox" style="width:auto;margin-right:8px;">Minority status</label>
-          <label><input id="women_headed_household" type="checkbox" style="width:auto;margin-right:8px;">Women-headed household</label>
-          <label><input id="single_parent" type="checkbox" style="width:auto;margin-right:8px;">Single parent</label>
-          <label><input id="currently_employed" type="checkbox" style="width:auto;margin-right:8px;">Currently employed</label>
-          <label><input id="aadhaar_verified" type="checkbox" style="width:auto;margin-right:8px;">Aadhaar verified</label>
-          <label><input id="bank_account_linked" type="checkbox" style="width:auto;margin-right:8px;">Bank account linked</label>
-        </div>
+        <div id="msg" class="notice" style="display:none;"></div>
       </section>
     </div>
-
-    <div class="btn-row" style="margin-top:18px;">
-      <button onclick="saveProfile()">Save profile</button>
-      <button class="secondary" onclick="goBack()">Back to dashboard</button>
-    </div>
-
-    <div id="msg" class="small" style="margin-top:12px;"></div>
   </main>
 
-  <script src="profile.js"></script>
+  <script src="/profile.js"></script>
 </body>
 </html>

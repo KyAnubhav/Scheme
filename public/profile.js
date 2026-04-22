@@ -1,74 +1,76 @@
 const token = localStorage.getItem("token");
-const role = localStorage.getItem("role");
-
-if (!token) window.location.href = "login.html";
-if (role === "admin") window.location.href = "admin.html";
+if (!token) window.location.href = "/login.html";
 
 function headers() {
   return {
-    "Content-Type": "application/json",
-    Authorization: "Bearer " + token
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "application/json"
   };
 }
 
-function goBack() {
-  window.location.href = "dashboard.html";
+function logout() {
+  localStorage.clear();
+  window.location.href = "/login.html";
 }
 
-function setMsg(text, good = false) {
-  const el = document.getElementById("msg");
-  el.className = good ? "notice good" : "small";
-  el.textContent = text || "";
+function setMsg(text, kind = "") {
+  const box = document.getElementById("msg");
+  box.style.display = "block";
+  box.className = `notice ${kind}`.trim();
+  box.textContent = text;
 }
 
-function setValue(id, value, type = "text") {
+function setVal(id, value) {
   const el = document.getElementById(id);
   if (!el) return;
-  if (type === "checkbox") el.checked = !!value;
+  if (el.type === "checkbox") el.checked = !!value;
   else el.value = value ?? "";
 }
 
 async function loadProfile() {
   try {
-    const res = await fetch("/api/profile/me", { headers: { Authorization: "Bearer " + token } });
+    const res = await fetch("/api/profile/me", { headers: headers() });
     const data = await res.json();
 
-    if (data.user) {
-      setMsg(`Signed in as ${data.user.username || data.user.email || "user"}`, true);
+    const user = data.user || {};
+    const profile = data.profile || null;
+
+    document.getElementById("accountBox").innerHTML = profile
+      ? `
+        <div class="stack">
+          <div><span class="small">Name</span><div><strong>${user.username || "—"}</strong></div></div>
+          <div><span class="small">Email</span><div><strong>${user.email || "—"}</strong></div></div>
+          <div><span class="small">Phone</span><div><strong>${user.phone || "—"}</strong></div></div>
+        </div>
+      `
+      : `<div class="empty">No profile saved yet. Fill the form and save.</div>`;
+
+    if (!profile) {
+      document.getElementById("saveStatus").textContent = "New";
+      document.getElementById("saveStatus").className = "badge gray";
+      return;
     }
 
-    const p = data.profile || {};
-    setValue("dob", p.dob);
-    setValue("gender", p.gender);
-    setValue("marital_status", p.marital_status);
-    setValue("category", p.category);
-    setValue("state", p.state);
-    setValue("district", p.district);
-    setValue("pincode", p.pincode);
-    setValue("annual_family_income", p.annual_family_income);
-    setValue("occupation", p.occupation);
-    setValue("education_level", p.education_level);
-    setValue("institution_name", p.institution_name);
-    setValue("course_name", p.course_name);
-    setValue("land_holding_acres", p.land_holding_acres);
-    setValue("disability_percent", p.disability_percent);
+    document.getElementById("saveStatus").textContent = "Saved";
+    document.getElementById("saveStatus").className = "badge green";
 
-    setValue("is_student", p.is_student, "checkbox");
-    setValue("is_farmer", p.is_farmer, "checkbox");
-    setValue("minority_status", p.minority_status, "checkbox");
-    setValue("women_headed_household", p.women_headed_household, "checkbox");
-    setValue("single_parent", p.single_parent, "checkbox");
-    setValue("currently_employed", p.currently_employed, "checkbox");
-    setValue("aadhaar_verified", p.aadhaar_verified, "checkbox");
-    setValue("bank_account_linked", p.bank_account_linked, "checkbox");
+    [
+      "dob","gender","marital_status","category","state","district","pincode",
+      "annual_family_income","occupation","education_level","institution_name","course_name",
+      "land_holding_acres","disability_percent"
+    ].forEach((id) => setVal(id, profile[id]));
+
+    [
+      "is_student","is_farmer","minority_status","women_headed_household",
+      "single_parent","currently_employed","aadhaar_verified","bank_account_linked"
+    ].forEach((id) => setVal(id, profile[id]));
   } catch (err) {
-    setMsg(err.message);
+    setMsg(err.message, "error");
   }
 }
 
 async function saveProfile() {
   try {
-    setMsg("Saving...");
     const payload = {
       dob: document.getElementById("dob").value || null,
       gender: document.getElementById("gender").value || null,
@@ -82,10 +84,10 @@ async function saveProfile() {
       education_level: document.getElementById("education_level").value.trim() || null,
       institution_name: document.getElementById("institution_name").value.trim() || null,
       course_name: document.getElementById("course_name").value.trim() || null,
-      land_holding_acres: document.getElementById("land_holding_acres").value || null,
-      disability_percent: document.getElementById("disability_percent").value || null,
       is_student: document.getElementById("is_student").checked,
       is_farmer: document.getElementById("is_farmer").checked,
+      land_holding_acres: document.getElementById("land_holding_acres").value || null,
+      disability_percent: document.getElementById("disability_percent").value || null,
       minority_status: document.getElementById("minority_status").checked,
       women_headed_household: document.getElementById("women_headed_household").checked,
       single_parent: document.getElementById("single_parent").checked,
@@ -99,17 +101,17 @@ async function saveProfile() {
       headers: headers(),
       body: JSON.stringify(payload)
     });
-
     const data = await res.json();
-
-    if (!res.ok || !data.success) {
-      setMsg(data.message || "Could not save profile.");
+    if (!data.success) {
+      setMsg(data.message || "Could not save profile.", "error");
       return;
     }
 
-    setMsg("Profile saved.", true);
+    setMsg("Profile saved.", "ok");
+    document.getElementById("saveStatus").textContent = "Saved";
+    document.getElementById("saveStatus").className = "badge green";
   } catch (err) {
-    setMsg(err.message || "Could not save profile.");
+    setMsg(err.message, "error");
   }
 }
 

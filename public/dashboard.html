@@ -1,90 +1,64 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard | Government Scheme Portal</title>
-  <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard · Scheme Portal</title>
+  <link rel="stylesheet" href="/styles.css" />
 </head>
 <body>
-  <div class="topbar">
-    <div class="topbar-inner">
-      <div class="brand">
-        <div class="brand-mark"></div>
-        <div>
-          <h2>Government Scheme Portal</h2>
-          <p>User dashboard</p>
-        </div>
-      </div>
-      <div class="btn-row">
-        <button class="secondary" onclick="goProfile()">Profile</button>
-        <button class="ghost" onclick="logout()">Logout</button>
-      </div>
+  <header class="topbar">
+    <div class="brand">
+      <h2>Scheme Portal</h2>
+      <p>Your matched schemes and all active schemes.</p>
     </div>
-  </div>
+    <div class="topbar-actions">
+      <a class="btn btn-ghost btn-small" href="/profile.html">Profile</a>
+      <button class="btn btn-danger btn-small" onclick="logout()">Logout</button>
+    </div>
+  </header>
 
-  <main class="page">
-    <section class="hero">
-      <h3>Your schemes, matched and browsable</h3>
-      <p>Keep your profile updated to improve matching. Search active schemes by name, category, or state scope.</p>
-    </section>
+  <main class="page stack">
+    <section class="grid cols-3" id="stats"></section>
 
-    <section class="grid cols-3" style="margin-bottom:18px;">
-      <div class="card kpi"><b id="kpiMatched">0</b><span>Matched schemes</span></div>
-      <div class="card kpi"><b id="kpiActive">0</b><span>Active schemes</span></div>
-      <div class="card kpi"><b id="kpiProfile">0%</b><span>Profile completeness</span></div>
-    </section>
-
-    <section class="grid cols-2">
-      <div class="card">
-        <div class="section-title">
-          <h4>Profile snapshot</h4>
-          <span id="profileStatus">Loading...</span>
-        </div>
-        <div id="profileSnapshot" class="notice">Loading profile…</div>
-      </div>
-
-      <div class="card">
-        <div class="section-title">
-          <h4>Search active schemes</h4>
-          <span>Simple and reliable</span>
-        </div>
-        <div class="form-grid one">
-          <div>
-            <label for="search">Search</label>
-            <input id="search" type="text" placeholder="Scheme name, category, or state">
+    <section class="split">
+      <aside class="stack">
+        <div class="card">
+          <div class="section-title">
+            <h3>Profile</h3>
+            <span class="badge" id="profileStatus">Loading</span>
           </div>
-          <div>
-            <label for="filterCategory">Category</label>
-            <select id="filterCategory">
-              <option value="">All categories</option>
-            </select>
+          <div id="profileBox" class="stack"></div>
+          <div style="margin-top:14px;">
+            <a class="btn btn-primary btn-block" href="/profile.html">Update profile</a>
           </div>
         </div>
-        <div class="btn-row" style="margin-top:12px;">
-          <button onclick="applyFilters()">Search</button>
-          <button class="secondary" onclick="clearFilters()">Reset</button>
+        <div class="card soft">
+          <h4>Tip</h4>
+          <p>Fill your profile once to see scheme matches based on your details.</p>
         </div>
-      </div>
-    </section>
+      </aside>
 
-    <section style="margin-top:20px;">
-      <div class="section-title">
-        <h4>Matched schemes</h4>
-        <span>Based on your profile</span>
-      </div>
-      <div id="matched" class="list"></div>
-    </section>
+      <section class="stack">
+        <div class="card">
+          <div class="section-title">
+            <h3>Matched schemes</h3>
+            <span class="badge green" id="matchedCount">0</span>
+          </div>
+          <div id="matchedSchemes" class="stack"></div>
+        </div>
 
-    <section style="margin-top:22px;">
-      <div class="section-title">
-        <h4>All active schemes</h4>
-        <span>Browse everything currently open</span>
-      </div>
-      <div id="allSchemes" class="list"></div>
+        <div class="card">
+          <div class="section-title">
+            <h3>All active schemes</h3>
+            <span class="badge gray" id="allCount">0</span>
+          </div>
+          <div id="allSchemes" class="stack"></div>
+        </div>
+      </section>
     </section>
   </main>
 
-  <script src="dashboard.js"></script>
+  <script src="/dashboard.js"></script>
 </body>
 </html>
