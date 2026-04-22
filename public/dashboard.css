@@ -1,0 +1,77 @@
+/* 1. Profile Status Container */
+/* We turn the summary into a flexible grid of boxes */
+#profileSummary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
+    background: transparent !important; /* Remove the old single box background */
+    border: none !important;
+    padding: 10px 0 !important;
+    width: 100%;
+}
+
+/* 2. Design for each individual component box */
+/* This styles the boxes injected for State, District, Income, etc. */
+#profileSummary div, 
+.profile-status-box {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
+}
+
+#profileSummary div:hover {
+    background: rgba(167, 139, 250, 0.1);
+    border-color: #a78bfa;
+    transform: translateY(-3px);
+}
+
+/* 3. Font Increases and Labels */
+/* Styling for the text inside the boxes */
+#profileSummary span.label {
+    display: block;
+    font-size: 12px;
+    text-transform: uppercase;
+    color: #a78bfa;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+#profileSummary span.value {
+    display: block;
+    font-size: 18px; /* Increased font size */
+    font-weight: 700;
+    color: #ffffff;
+}
+
+/* 4. Link Tag Enhancements */
+/* Making the links look like professional buttons or glowing tags */
+a {
+    color: #a78bfa;
+    text-decoration: none;
+    font-size: 16px; /* Slightly larger font */
+    font-weight: 600;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    display: inline-block;
+}
+
+a:hover {
+    color: #ffffff;
+    background: rgba(167, 139, 250, 0.2);
+    text-shadow: 0 0 10px rgba(167, 139, 250, 0.5);
+}
+
+/* 5. Utility Classes for the JavaScript injection */
+/* If your JS uses specific classes for the profile data, use these */
+.status-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}

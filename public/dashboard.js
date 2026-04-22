@@ -4,7 +4,6 @@ if (!token) window.location.href = "/login.html";
 let matchedData = [];
 let allData = [];
 let profileData = null;
-let userData = null;
 
 function headers() {
   return { Authorization: `Bearer ${token}` };
@@ -15,102 +14,94 @@ function logout() {
   window.location.href = "/login.html";
 }
 
-function escapeHtml(str) {
-  return String(str ?? "").replace(/[&<>"']/g, (m) => ({
+function goProfile() {
+  window.location.href = "/profile.html";
+}
+
+function esc(value) {
+  return String(value ?? "").replace(/[&<>"]/g, (m) => ({
     "&": "&amp;",
     "<": "&lt;",
     ">": "&gt;",
-    '"': "&quot;",
-    "'": "&#39;"
-  }[m]));
+    '"': "&quot;"
+  })[m]);
 }
 
-function schemeCard(s, tag = "") {
-  const state = s.state_scope || "National";
+function profileLine(label, value) {
+  return `<div><strong>${esc(label)}:</strong> ${esc(value || "—")}</div>`;
+}
+
+function schemeCard(scheme, matched = false) {
+  const scope = scheme.state_scope || "National";
+  const apply = scheme.application_link ? `<a class="btn" href="${esc(scheme.application_link)}" target="_blank" rel="noreferrer">Apply</a>` : "";
+  const website = scheme.official_website ? `<a class="btn secondary" href="${esc(scheme.official_website)}" target="_blank" rel="noreferrer">Website</a>` : "";
   return `
     <article class="scheme-card">
-      <div class="section-title" style="margin:0;align-items:flex-start;">
+      <header>
         <div>
-          <h4>${escapeHtml(s.scheme_name)}</h4>
-          <div class="meta">
-            <span class="badge gray">${escapeHtml(s.category_name || "Category")}</span>
-            <span class="badge gray">${escapeHtml(s.ministry_name || "Ministry")}</span>
-            <span class="badge gray">${escapeHtml(state)}</span>
-          </div>
+          <h3>${esc(scheme.scheme_name)}</h3>
+          <div class="meta">${esc(scheme.short_title || "")}</div>
         </div>
-        ${tag ? `<span class="badge green">${escapeHtml(tag)}</span>` : ""}
-      </div>
-      <p>${escapeHtml(s.short_title || s.description || "")}</p>
+        ${matched ? '<span class="badge good">Matched</span>' : ''}
+      </header>
       <div class="meta">
-        <span>Beneficiary: ${escapeHtml(s.beneficiary_type || "—")}</span>
-        <span>Benefit: ${escapeHtml(s.benefit_type || "—")}${s.benefit_amount ? ` · ₹${escapeHtml(s.benefit_amount)}` : ""}</span>
-        <span>Income limit: ${s.income_limit ? `₹${escapeHtml(s.income_limit)}` : "—"}</span>
-        <span>Deadline: ${escapeHtml(s.deadline || "Open")}</span>
+        ${esc(scheme.category_name || "Category")} · ${esc(scheme.ministry_name || "Ministry")} · ${esc(scope)}
       </div>
-      <div class="topbar-actions">
-        ${s.application_link ? `<a class="btn btn-primary btn-small" target="_blank" rel="noreferrer" href="${escapeHtml(s.application_link)}">Apply</a>` : ""}
-        ${s.official_website ? `<a class="btn btn-ghost btn-small" target="_blank" rel="noreferrer" href="${escapeHtml(s.official_website)}">Website</a>` : ""}
+      <div class="badges">
+        <span class="badge neutral">${esc(scheme.beneficiary_type || "Beneficiary")}</span>
+        <span class="badge">${esc(scheme.benefit_type || "Benefit")}</span>
+        ${scheme.income_limit ? `<span class="badge warn">Income up to ₹${esc(scheme.income_limit)}</span>` : ""}
+      </div>
+      <p class="meta" style="margin-top:12px;">${esc(scheme.description || "")}</p>
+      <div class="toolbar" style="margin-top:14px;">
+        ${apply}
+        ${website}
       </div>
     </article>
   `;
 }
 
-function renderStats() {
-  const stats = document.getElementById("stats");
-  const role = localStorage.getItem("role") || "user";
-  stats.innerHTML = [
-    ["Matched schemes", matchedData.length],
-    ["Active schemes", allData.length],
-    ["Profile", profileData ? "Saved" : "Missing"]
-  ].map(([label, value]) => `
-    <div class="kpi card">
-      <div class="label">${escapeHtml(label)}</div>
-      <div class="value">${escapeHtml(value)}</div>
-    </div>
-  `).join("");
-}
-
 function renderProfile() {
-  const box = document.getElementById("profileBox");
-  const status = document.getElementById("profileStatus");
+  const box = document.getElementById("profileSummary");
+  const hint = document.getElementById("profileHint");
 
   if (!profileData) {
-    status.textContent = "Missing";
-    status.className = "badge red";
-    box.innerHTML = `<div class="empty">No profile found. Add your details to get scheme matches.</div>`;
+    hint.textContent = "Profile missing";
+    box.innerHTML = "Open Profile and save your details to unlock matching.";
     return;
   }
 
-  status.textContent = "Saved";
-  status.className = "badge green";
-
+  hint.textContent = "Profile saved";
   const p = profileData;
   box.innerHTML = `
-    <div class="grid cols-2" style="gap:10px;">
-      <div><div class="small">State</div><strong>${escapeHtml(p.state || "—")}</strong></div>
-      <div><div class="small">District</div><strong>${escapeHtml(p.district || "—")}</strong></div>
-      <div><div class="small">Income</div><strong>${p.annual_family_income ? `₹${escapeHtml(p.annual_family_income)}` : "—"}</strong></div>
-      <div><div class="small">Category</div><strong>${escapeHtml(p.category || "—")}</strong></div>
-      <div><div class="small">Education</div><strong>${escapeHtml(p.education_level || "—")}</strong></div>
-      <div><div class="small">Student</div><strong>${p.is_student ? "Yes" : "No"}</strong></div>
+    <div class="field-grid three">
+      ${profileLine("State", p.state)}
+      ${profileLine("District", p.district)}
+      ${profileLine("Income", p.annual_family_income ? `₹${p.annual_family_income}` : "—")}
+      ${profileLine("Category", p.category)}
+      ${profileLine("Education", p.education_level)}
+      ${profileLine("Student", p.is_student ? "Yes" : "No")}
+      ${profileLine("Farmer", p.is_farmer ? "Yes" : "No")}
+      ${profileLine("Disability %", p.disability_percent ?? "—")}
+      ${profileLine("Verified", p.aadhaar_verified ? "Aadhaar ✓" : "Aadhaar pending")}
     </div>
   `;
 }
 
 function renderSchemes() {
-  document.getElementById("matchedCount").textContent = matchedData.length;
-  document.getElementById("allCount").textContent = allData.length;
+  document.getElementById("matchedCount").textContent = `${matchedData.length} matched`;
+  document.getElementById("allCount").textContent = `${allData.length} active`;
 
   document.getElementById("matchedSchemes").innerHTML = matchedData.length
-    ? matchedData.map(s => schemeCard(s, "Matched")).join("")
-    : `<div class="empty">No matches yet. Complete your profile to see eligible schemes.</div>`;
+    ? matchedData.map((s) => schemeCard(s, true)).join("")
+    : `<div class="notice">No matching schemes yet. Complete your profile to improve matching.</div>`;
 
   document.getElementById("allSchemes").innerHTML = allData.length
-    ? allData.map(s => schemeCard(s)).join("")
-    : `<div class="empty">No active schemes available right now.</div>`;
+    ? allData.map((s) => schemeCard(s, false)).join("")
+    : `<div class="notice">No active schemes available.</div>`;
 }
 
-async function loadDashboard() {
+async function reloadDashboard() {
   try {
     const [matchedRes, allRes, profileRes] = await Promise.all([
       fetch("/api/schemes/matched", { headers: headers() }),
@@ -121,15 +112,14 @@ async function loadDashboard() {
     matchedData = await matchedRes.json();
     allData = await allRes.json();
     const profileJson = await profileRes.json();
-    profileData = profileJson.profile;
-    userData = profileJson.user;
+    profileData = profileJson.profile || null;
 
-    renderStats();
     renderProfile();
     renderSchemes();
   } catch (err) {
-    document.getElementById("matchedSchemes").innerHTML = `<div class="empty">${escapeHtml(err.message)}</div>`;
+    document.getElementById("matchedSchemes").innerHTML = `<div class="notice">${esc(err.message)}</div>`;
+    document.getElementById("allSchemes").innerHTML = "";
   }
 }
 
-loadDashboard();
+reloadDashboard();

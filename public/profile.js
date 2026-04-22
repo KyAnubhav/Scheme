@@ -8,68 +8,78 @@ function headers() {
   };
 }
 
+function setMessage(text, kind = "") {
+  const el = document.getElementById("message");
+  el.textContent = text || "";
+  el.style.color = kind === "error" ? "#b91c1c" : "#0f172a";
+}
+
 function logout() {
   localStorage.clear();
   window.location.href = "/login.html";
 }
 
-function setMsg(text, kind = "") {
-  const box = document.getElementById("msg");
-  box.style.display = "block";
-  box.className = `notice ${kind}`.trim();
-  box.textContent = text;
+function goDashboard() {
+  window.location.href = "/dashboard.html";
 }
 
-function setVal(id, value) {
+function reloadProfile() {
+  loadProfile();
+}
+
+function setSelect(id, value) {
   const el = document.getElementById(id);
   if (!el) return;
-  if (el.type === "checkbox") el.checked = !!value;
-  else el.value = value ?? "";
+  el.value = value ?? "";
+}
+
+function setCheckbox(id, value) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.checked = Boolean(value);
 }
 
 async function loadProfile() {
+  setMessage("");
   try {
     const res = await fetch("/api/profile/me", { headers: headers() });
     const data = await res.json();
 
-    const user = data.user || {};
-    const profile = data.profile || null;
-
-    document.getElementById("accountBox").innerHTML = profile
-      ? `
-        <div class="stack">
-          <div><span class="small">Name</span><div><strong>${user.username || "—"}</strong></div></div>
-          <div><span class="small">Email</span><div><strong>${user.email || "—"}</strong></div></div>
-          <div><span class="small">Phone</span><div><strong>${user.phone || "—"}</strong></div></div>
-        </div>
-      `
-      : `<div class="empty">No profile saved yet. Fill the form and save.</div>`;
-
-    if (!profile) {
-      document.getElementById("saveStatus").textContent = "New";
-      document.getElementById("saveStatus").className = "badge gray";
-      return;
+    if (data.profile) {
+      const p = data.profile;
+      document.getElementById("dob").value = p.dob ? String(p.dob).slice(0, 10) : "";
+      setSelect("gender", p.gender);
+      setSelect("marital_status", p.marital_status);
+      setSelect("category", p.category);
+      document.getElementById("state").value = p.state || "";
+      document.getElementById("district").value = p.district || "";
+      document.getElementById("pincode").value = p.pincode || "";
+      document.getElementById("annual_family_income").value = p.annual_family_income ?? "";
+      document.getElementById("occupation").value = p.occupation || "";
+      document.getElementById("education_level").value = p.education_level || "";
+      document.getElementById("institution_name").value = p.institution_name || "";
+      document.getElementById("course_name").value = p.course_name || "";
+      setSelect("is_student", p.is_student ? "1" : "0");
+      setSelect("is_farmer", p.is_farmer ? "1" : "0");
+      document.getElementById("land_holding_acres").value = p.land_holding_acres ?? "";
+      document.getElementById("disability_percent").value = p.disability_percent ?? "";
+      setSelect("minority_status", p.minority_status ? "1" : "0");
+      setSelect("women_headed_household", p.women_headed_household ? "1" : "0");
+      setSelect("single_parent", p.single_parent ? "1" : "0");
+      setSelect("currently_employed", p.currently_employed ? "1" : "0");
+      setCheckbox("aadhaar_verified", p.aadhaar_verified);
+      setCheckbox("bank_account_linked", p.bank_account_linked);
+      document.getElementById("saveState").textContent = "Saved";
+    } else {
+      document.getElementById("saveState").textContent = "Empty";
     }
-
-    document.getElementById("saveStatus").textContent = "Saved";
-    document.getElementById("saveStatus").className = "badge green";
-
-    [
-      "dob","gender","marital_status","category","state","district","pincode",
-      "annual_family_income","occupation","education_level","institution_name","course_name",
-      "land_holding_acres","disability_percent"
-    ].forEach((id) => setVal(id, profile[id]));
-
-    [
-      "is_student","is_farmer","minority_status","women_headed_household",
-      "single_parent","currently_employed","aadhaar_verified","bank_account_linked"
-    ].forEach((id) => setVal(id, profile[id]));
   } catch (err) {
-    setMsg(err.message, "error");
+    setMessage(err.message, "error");
   }
 }
 
 async function saveProfile() {
+  setMessage("Saving profile...");
   try {
     const payload = {
       dob: document.getElementById("dob").value || null,
@@ -84,14 +94,14 @@ async function saveProfile() {
       education_level: document.getElementById("education_level").value.trim() || null,
       institution_name: document.getElementById("institution_name").value.trim() || null,
       course_name: document.getElementById("course_name").value.trim() || null,
-      is_student: document.getElementById("is_student").checked,
-      is_farmer: document.getElementById("is_farmer").checked,
+      is_student: document.getElementById("is_student").value === "1",
+      is_farmer: document.getElementById("is_farmer").value === "1",
       land_holding_acres: document.getElementById("land_holding_acres").value || null,
       disability_percent: document.getElementById("disability_percent").value || null,
-      minority_status: document.getElementById("minority_status").checked,
-      women_headed_household: document.getElementById("women_headed_household").checked,
-      single_parent: document.getElementById("single_parent").checked,
-      currently_employed: document.getElementById("currently_employed").checked,
+      minority_status: document.getElementById("minority_status").value === "1",
+      women_headed_household: document.getElementById("women_headed_household").value === "1",
+      single_parent: document.getElementById("single_parent").value === "1",
+      currently_employed: document.getElementById("currently_employed").value === "1",
       aadhaar_verified: document.getElementById("aadhaar_verified").checked,
       bank_account_linked: document.getElementById("bank_account_linked").checked
     };
@@ -101,17 +111,17 @@ async function saveProfile() {
       headers: headers(),
       body: JSON.stringify(payload)
     });
+
     const data = await res.json();
     if (!data.success) {
-      setMsg(data.message || "Could not save profile.", "error");
+      setMessage(data.message || "Save failed.", "error");
       return;
     }
 
-    setMsg("Profile saved.", "ok");
-    document.getElementById("saveStatus").textContent = "Saved";
-    document.getElementById("saveStatus").className = "badge green";
+    document.getElementById("saveState").textContent = "Saved";
+    setMessage("Profile saved.");
   } catch (err) {
-    setMsg(err.message, "error");
+    setMessage(err.message, "error");
   }
 }
 

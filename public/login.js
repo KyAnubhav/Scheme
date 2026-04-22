@@ -1,8 +1,7 @@
-function setMsg(text, kind = "") {
-  const box = document.getElementById("msg");
-  box.style.display = "block";
-  box.className = `notice ${kind}`.trim();
-  box.textContent = text;
+function setMessage(text, kind = "") {
+  const el = document.getElementById("message");
+  el.textContent = text || "";
+  el.style.color = kind === "error" ? "#b91c1c" : "#0f172a";
 }
 
 async function login() {
@@ -10,9 +9,11 @@ async function login() {
   const password = document.getElementById("password").value;
 
   if (!email || !password) {
-    setMsg("Enter email and password.", "warn");
+    setMessage("Enter email and password.", "error");
     return;
   }
+
+  setMessage("Signing in...");
 
   try {
     const res = await fetch("/api/login", {
@@ -22,16 +23,18 @@ async function login() {
     });
 
     const data = await res.json();
+
     if (!data.success) {
-      setMsg(data.message || "Login failed.", "error");
+      setMessage(data.message || "Login failed.", "error");
       return;
     }
 
     localStorage.setItem("token", data.token);
-    localStorage.setItem("role", data.user?.role || "user");
-    setMsg("Login successful.", "ok");
-    window.location.href = data.user?.role === "admin" ? "/admin.html" : "/dashboard.html";
+    localStorage.setItem("role", data.user.role || "user");
+    localStorage.setItem("username", data.user.username || "");
+
+    window.location.href = data.user.role === "admin" ? "/admin.html" : "/dashboard.html";
   } catch (err) {
-    setMsg(err.message || "Network error.", "error");
+    setMessage(err.message, "error");
   }
 }

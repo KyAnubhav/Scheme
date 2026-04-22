@@ -3,72 +3,196 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Profile · Scheme Portal</title>
-  <link rel="stylesheet" href="/styles.css" />
+  <title>Profile | Government Scheme Portal</title>
+  <link rel="stylesheet" href="/profile.css" />
 </head>
 <body>
-  <header class="topbar">
-    <div class="brand">
-      <h2>Profile</h2>
-      <p>Fill the details used for scheme matching.</p>
+  <div class="page">
+    <div class="topbar">
+      <div class="brand">
+        <div class="eyebrow">Government Scheme Portal</div>
+        <h1>Profile</h1>
+        <p>Save the details used for matching.</p>
+      </div>
+      <div class="actions">
+        <button class="secondary" onclick="goDashboard()">Dashboard</button>
+        <button class="ghost" onclick="reloadProfile()">Refresh</button>
+        <button onclick="logout()">Logout</button>
+      </div>
     </div>
-    <div class="topbar-actions">
-      <a class="btn btn-ghost btn-small" href="/dashboard.html">Back</a>
-      <button class="btn btn-danger btn-small" onclick="logout()">Logout</button>
-    </div>
-  </header>
 
-  <main class="page">
-    <div class="split">
-      <section class="card stack">
+    <div class="stack">
+      <div class="card">
         <div class="section-title">
-          <h3>Account</h3>
-          <span class="badge gray" id="saveStatus">Loading</span>
-        </div>
-        <div id="accountBox" class="empty">Loading profile…</div>
-      </section>
-
-      <section class="card stack">
-        <div class="section-title">
-          <h3>Profile details</h3>
-          <button class="btn btn-primary btn-small" onclick="saveProfile()">Save profile</button>
+          <div>
+            <h2>Your details</h2>
+            <p>Keep this short and accurate for better matching.</p>
+          </div>
+          <span id="saveState" class="badge neutral">Not saved yet</span>
         </div>
 
-        <div class="profile-grid cols-2">
-          <div><label for="dob">Date of birth</label><input id="dob" type="date" /></div>
-          <div><label for="gender">Gender</label><select id="gender"><option value="">Select</option><option>Male</option><option>Female</option><option>Other</option></select></div>
-          <div><label for="marital_status">Marital status</label><select id="marital_status"><option value="">Select</option><option>Single</option><option>Married</option><option>Widowed</option><option>Divorced</option></select></div>
-          <div><label for="category">Category</label><select id="category"><option value="">Select</option><option>General</option><option>OBC</option><option>SC</option><option>ST</option><option>EWS</option></select></div>
-          <div><label for="state">State</label><input id="state" placeholder="State" /></div>
-          <div><label for="district">District</label><input id="district" placeholder="District" /></div>
-          <div><label for="pincode">Pincode</label><input id="pincode" placeholder="Pincode" /></div>
-          <div><label for="annual_family_income">Annual family income</label><input id="annual_family_income" type="number" min="0" placeholder="Income" /></div>
-          <div><label for="occupation">Occupation</label><input id="occupation" placeholder="Occupation" /></div>
-          <div><label for="education_level">Education level</label><input id="education_level" placeholder="Education level" /></div>
-          <div><label for="institution_name">Institution name</label><input id="institution_name" placeholder="Institution name" /></div>
-          <div><label for="course_name">Course name</label><input id="course_name" placeholder="Course name" /></div>
-          <div><label for="land_holding_acres">Land holding acres</label><input id="land_holding_acres" type="number" step="0.01" min="0" placeholder="Acres" /></div>
-          <div><label for="disability_percent">Disability percent</label><input id="disability_percent" type="number" min="0" max="100" placeholder="0 - 100" /></div>
-        </div>
+        <div class="profile-sections">
+          <div class="profile-section">
+            <h3>Personal</h3>
+            <div class="field-grid">
+              <div class="field">
+                <label for="dob">Date of birth</label>
+                <input id="dob" type="date" />
+              </div>
+              <div class="field">
+                <label for="gender">Gender</label>
+                <select id="gender">
+                  <option value="">Select</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="marital_status">Marital status</label>
+                <select id="marital_status">
+                  <option value="">Select</option>
+                  <option value="Single">Single</option>
+                  <option value="Married">Married</option>
+                  <option value="Widowed">Widowed</option>
+                  <option value="Divorced">Divorced</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="category">Category</label>
+                <select id="category">
+                  <option value="">Select</option>
+                  <option value="General">General</option>
+                  <option value="OBC">OBC</option>
+                  <option value="SC">SC</option>
+                  <option value="ST">ST</option>
+                  <option value="EWS">EWS</option>
+                </select>
+              </div>
+            </div>
+          </div>
 
-        <div>
-          <label>Quick flags</label>
-          <div class="toggle-row">
-            <label class="toggle"><input id="is_student" type="checkbox" /> Student</label>
-            <label class="toggle"><input id="is_farmer" type="checkbox" /> Farmer</label>
-            <label class="toggle"><input id="minority_status" type="checkbox" /> Minority status</label>
-            <label class="toggle"><input id="women_headed_household" type="checkbox" /> Women-headed household</label>
-            <label class="toggle"><input id="single_parent" type="checkbox" /> Single parent</label>
-            <label class="toggle"><input id="currently_employed" type="checkbox" /> Currently employed</label>
-            <label class="toggle"><input id="aadhaar_verified" type="checkbox" /> Aadhaar verified</label>
-            <label class="toggle"><input id="bank_account_linked" type="checkbox" /> Bank account linked</label>
+          <div class="profile-section">
+            <h3>Location & education</h3>
+            <div class="field-grid">
+              <div class="field">
+                <label for="state">State</label>
+                <input id="state" type="text" placeholder="State" />
+              </div>
+              <div class="field">
+                <label for="district">District</label>
+                <input id="district" type="text" placeholder="District" />
+              </div>
+              <div class="field">
+                <label for="pincode">Pincode</label>
+                <input id="pincode" type="text" placeholder="Pincode" />
+              </div>
+              <div class="field">
+                <label for="education_level">Education level</label>
+                <input id="education_level" type="text" placeholder="Education level" />
+              </div>
+              <div class="field">
+                <label for="institution_name">Institution name</label>
+                <input id="institution_name" type="text" placeholder="Institution name" />
+              </div>
+              <div class="field">
+                <label for="course_name">Course name</label>
+                <input id="course_name" type="text" placeholder="Course name" />
+              </div>
+            </div>
+          </div>
+
+          <div class="profile-section">
+            <h3>Eligibility</h3>
+            <div class="field-grid">
+              <div class="field">
+                <label for="annual_family_income">Annual family income</label>
+                <input id="annual_family_income" type="number" min="0" placeholder="Annual income" />
+              </div>
+              <div class="field">
+                <label for="occupation">Occupation</label>
+                <input id="occupation" type="text" placeholder="Occupation" />
+              </div>
+              <div class="field">
+                <label for="land_holding_acres">Land holding (acres)</label>
+                <input id="land_holding_acres" type="number" min="0" step="0.01" placeholder="Land in acres" />
+              </div>
+              <div class="field">
+                <label for="disability_percent">Disability %</label>
+                <input id="disability_percent" type="number" min="0" max="100" placeholder="Disability %" />
+              </div>
+            </div>
+
+            <div style="margin-top:12px;" class="field-grid">
+              <div class="field">
+                <label for="is_student">Student</label>
+                <select id="is_student">
+                  <option value="0">No</option>
+                  <option value="1">Yes</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="is_farmer">Farmer</label>
+                <select id="is_farmer">
+                  <option value="0">No</option>
+                  <option value="1">Yes</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="minority_status">Minority status</label>
+                <select id="minority_status">
+                  <option value="0">No</option>
+                  <option value="1">Yes</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="women_headed_household">Women-headed household</label>
+                <select id="women_headed_household">
+                  <option value="0">No</option>
+                  <option value="1">Yes</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="single_parent">Single parent</label>
+                <select id="single_parent">
+                  <option value="0">No</option>
+                  <option value="1">Yes</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="currently_employed">Currently employed</label>
+                <select id="currently_employed">
+                  <option value="0">No</option>
+                  <option value="1">Yes</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="profile-section">
+            <h3>Verification</h3>
+            <div class="switch-row">
+              <label for="aadhaar_verified">Aadhaar verified</label>
+              <input class="toggle" id="aadhaar_verified" type="checkbox" />
+            </div>
+            <div class="switch-row">
+              <label for="bank_account_linked">Bank account linked</label>
+              <input class="toggle" id="bank_account_linked" type="checkbox" />
+            </div>
+            <div class="notice" style="margin-top:14px;">
+              These two flags help some schemes match more accurately.
+            </div>
           </div>
         </div>
 
-        <div id="msg" class="notice" style="display:none;"></div>
-      </section>
+        <div class="auth-actions" style="margin-top:18px;">
+          <button onclick="saveProfile()">Save profile</button>
+        </div>
+
+        <div id="message" class="message"></div>
+      </div>
     </div>
-  </main>
+  </div>
 
   <script src="/profile.js"></script>
 </body>

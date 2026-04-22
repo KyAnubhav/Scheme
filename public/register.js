@@ -1,11 +1,10 @@
-function setMsg(text, kind = "") {
-  const box = document.getElementById("msg");
-  box.style.display = "block";
-  box.className = `notice ${kind}`.trim();
-  box.textContent = text;
+function setMessage(text, kind = "") {
+  const el = document.getElementById("message");
+  el.textContent = text || "";
+  el.style.color = kind === "error" ? "#b91c1c" : "#0f172a";
 }
 
-async function register() {
+async function sendOtp() {
   const payload = {
     username: document.getElementById("username").value.trim(),
     email: document.getElementById("email").value.trim(),
@@ -14,9 +13,11 @@ async function register() {
   };
 
   if (!payload.username || !payload.email || !payload.phone || !payload.password) {
-    setMsg("Fill all fields.", "warn");
+    setMessage("Fill all fields first.", "error");
     return;
   }
+
+  setMessage("Sending OTP...");
 
   try {
     const res = await fetch("/api/register", {
@@ -24,40 +25,47 @@ async function register() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload)
     });
+
     const data = await res.json();
-    if (!data.success) {
-      setMsg(data.message || "Could not send OTP.", "error");
+    if (!data.success && data.message) {
+      setMessage(data.message, "error");
       return;
     }
-    setMsg("OTP sent. Check your email.", "ok");
+
+    setMessage("OTP sent to your email.");
   } catch (err) {
-    setMsg(err.message || "Network error.", "error");
+    setMessage(err.message, "error");
   }
 }
 
 async function verifyOtp() {
   const email = document.getElementById("email").value.trim();
-  const emailOTP = document.getElementById("otp").value.trim();
+  const otp = document.getElementById("otp").value.trim();
 
-  if (!email || !emailOTP) {
-    setMsg("Enter email and OTP.", "warn");
+  if (!email || !otp) {
+    setMessage("Enter email and OTP.", "error");
     return;
   }
+
+  setMessage("Verifying OTP...");
 
   try {
     const res = await fetch("/api/verify-otp", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, emailOTP })
+      body: JSON.stringify({ email, emailOTP: otp })
     });
+
     const data = await res.json();
+
     if (!data.success) {
-      setMsg(data.message || "OTP verification failed.", "error");
+      setMessage(data.message || "OTP verification failed.", "error");
       return;
     }
-    setMsg("Account created. Please login.", "ok");
-    setTimeout(() => { window.location.href = "/login.html"; }, 900);
+
+    setMessage("Account created. You can log in now.");
+    window.location.href = "/login.html";
   } catch (err) {
-    setMsg(err.message || "Network error.", "error");
+    setMessage(err.message, "error");
   }
 }

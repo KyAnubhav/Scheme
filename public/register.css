@@ -1,0 +1,177 @@
+/* 1. Global Reset & Theme */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    /* Theme Gradient: Black -> Dark Blue -> Purple */
+    background: linear-gradient(135deg, #000000 0%, #090979 40%, #7e22ce 100%);
+    background-attachment: fixed;
+    color: white;
+}
+
+/* 2. Centering the Registration Box */
+.auth-wrap {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+/* 3. Glassmorphism Card */
+.auth-card {
+    width: 100%;
+    max-width: 450px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 35px;
+    backdrop-filter: blur(15px);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+}
+
+/* 4. Brand & Header Styles */
+.brand .eyebrow {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #a78bfa; /* Purple accent color */
+    margin-bottom: 4px;
+}
+
+.brand h1 {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.brand .sub {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+/* 5. Form Fields Grid */
+.field-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.field label {
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+input {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    padding: 12px 14px;
+    color: white;
+    font-size: 15px;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+input:focus {
+    border-color: #a78bfa;
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 10px rgba(167, 139, 250, 0.3);
+}
+
+input::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+}
+
+/* 6. Buttons & Actions */
+.auth-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+button {
+    width: 100%;
+    cursor: pointer;
+    border: none;
+    border-radius: 10px;
+    padding: 12px;
+    font-weight: 600;
+    font-size: 15px;
+    transition: all 0.3s ease;
+}
+
+/* Main 'Send OTP' Button */
+button:not(.secondary):not(.ghost) {
+    background: linear-gradient(90deg, #7e22ce 0%, #090979 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(126, 34, 206, 0.3);
+}
+
+button:not(.secondary):not(.ghost):hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(167, 139, 250, 0.4);
+}
+
+/* Secondary 'Verify' Button */
+button.secondary {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+button.secondary:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* Ghost Button Styling for 'Login' link */
+.btn.ghost {
+    display: block;
+    text-align: center;
+    text-decoration: none;
+    color: #a78bfa;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 8px;
+    border-radius: 10px;
+    transition: 0.3s;
+}
+
+.btn.ghost:hover {
+    background: rgba(167, 139, 250, 0.1);
+    color: white;
+}
+
+/* 7. Messages */
+.message {
+    margin-top: 15px;
+    text-align: center;
+    font-size: 14px;
+    min-height: 20px;
+    color: #e0e0e0;
+}
+
+/* 8. Responsive Design */
+@media (max-width: 480px) {
+    .auth-card {
+        padding: 25px 20px;
+    }
+    
+    .brand h1 {
+        font-size: 24px;
+    }
+}

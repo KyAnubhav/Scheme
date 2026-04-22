@@ -1,0 +1,221 @@
+/* 1. Global Reset & Theme */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    /* Consistent Theme Gradient */
+    background: linear-gradient(135deg, #020024 0%, #090979 35%, #7e22ce 100%);
+    background-attachment: fixed; /* Ensures gradient stays put while scrolling */
+    color: white;
+    padding: 20px;
+}
+
+.page {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* 2. Topbar / Header Styling */
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding: 10px;
+}
+
+.brand .eyebrow {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #a78bfa; /* Light purple accent */
+    margin-bottom: 4px;
+}
+
+.brand h1 {
+    font-size: 28px;
+    font-weight: 700;
+}
+
+.brand p {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 14px;
+}
+
+.actions {
+    display: flex;
+    gap: 12px;
+}
+
+/* 3. Layout Grid (Two-Pane) */
+.two-pane {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr; /* Form is wider than stats */
+    gap: 24px;
+}
+
+.stack {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* 4. Card / Glassmorphism Design */
+.card {
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 24px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.section-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+}
+
+.section-title h2 {
+    font-size: 18px;
+    color: #a78bfa;
+    margin-bottom: 4px;
+}
+
+.section-title p {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* 5. Form Grid & Fields */
+.field-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.field label {
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+input, select, textarea {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    padding: 10px 14px;
+    color: white;
+    outline: none;
+    transition: 0.3s;
+}
+
+input:focus, select:focus, textarea:focus {
+    border-color: #a78bfa;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+/* Select arrows */
+select option {
+    background: #1e1b4b; /* Dark indigo for dropdown options */
+    color: white;
+}
+
+/* 6. Buttons */
+button {
+    cursor: pointer;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+/* Primary Publish Button */
+button:not(.secondary):not(.ghost) {
+    background: linear-gradient(90deg, #7e22ce 0%, #090979 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(126, 34, 206, 0.3);
+}
+
+button:not(.secondary):not(.ghost):hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(167, 139, 250, 0.4);
+}
+
+/* Secondary / Add Rule Buttons */
+button.secondary {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+button.secondary:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* Logout / Ghost Button */
+button.ghost {
+    background: transparent;
+    color: #ff8080;
+    border: 1px solid rgba(255, 128, 128, 0.3);
+}
+
+button.ghost:hover {
+    background: rgba(255, 128, 128, 0.1);
+}
+
+/* 7. Statistics & Lists */
+.stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.stat-item {
+    background: rgba(255, 255, 255, 0.03);
+    padding: 15px;
+    border-radius: 12px;
+    text-align: center;
+}
+
+.notice {
+    font-size: 12px;
+    color: #a78bfa;
+    background: rgba(167, 139, 250, 0.1);
+    padding: 10px;
+    border-radius: 8px;
+    border-left: 3px solid #a78bfa;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .two-pane {
+        grid-template-columns: 1fr;
+    }
+    
+    .field-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .field {
+        grid-column: span 1 !important;
+    }
+}

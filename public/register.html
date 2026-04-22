@@ -3,56 +3,54 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Register · Scheme Portal</title>
-  <link rel="stylesheet" href="/styles.css" />
+  <title>Register | Government Scheme Portal</title>
+  <link rel="stylesheet" href="/register.css" />
 </head>
 <body>
-  <main class="auth-shell">
-    <section class="auth-card">
-      <div class="brand">
+  <div class="page auth-wrap">
+    <div class="card auth-card">
+      <div class="brand" style="margin-bottom:14px;">
+        <div class="eyebrow">Government Scheme Portal</div>
         <h1>Create account</h1>
-        <p>Use email OTP to verify your account.</p>
+        <p class="sub">Verify by email, then complete your profile after login.</p>
       </div>
 
-      <div class="form-grid">
-        <div>
+      <div class="field-grid">
+        <div class="field">
           <label for="username">Name</label>
-          <input id="username" placeholder="Full name" autocomplete="name" />
+          <input id="username" type="text" placeholder="Full name" autocomplete="name" />
         </div>
-        <div>
+        <div class="field">
           <label for="email">Email</label>
-          <input id="email" type="email" placeholder="you@example.com" autocomplete="email" />
+          <input id="email" type="email" placeholder="name@example.com" autocomplete="email" />
         </div>
-        <div>
+        <div class="field">
           <label for="phone">Phone</label>
-          <input id="phone" placeholder="10-digit mobile number" autocomplete="tel" />
+          <input id="phone" type="tel" placeholder="Phone number" autocomplete="tel" />
         </div>
-        <div>
+        <div class="field">
           <label for="password">Password</label>
           <input id="password" type="password" placeholder="Create password" autocomplete="new-password" />
         </div>
       </div>
 
       <div class="auth-actions">
-        <button class="btn btn-primary" onclick="register()">Send OTP</button>
-        <a class="btn btn-ghost" href="/login.html">Back to login</a>
+        <button onclick="sendOtp()">Send OTP</button>
+        <button class="secondary" onclick="verifyOtp()">Verify & create account</button>
+        <a class="btn ghost" href="/login.html">Login</a>
       </div>
 
-      <div class="auth-sep"></div>
-
-      <div class="form-grid">
-        <div>
+      <div class="field-grid" style="margin-top:10px;">
+        <div class="field">
           <label for="otp">OTP</label>
-          <input id="otp" placeholder="Enter OTP" inputmode="numeric" />
+          <input id="otp" type="text" inputmode="numeric" placeholder="Enter OTP" />
         </div>
       </div>
 
-      <div class="auth-actions">
-        <button class="btn btn-success" onclick="verifyOtp()">Verify &amp; Create</button>
-      </div>
-      <div id="msg" class="notice" style="display:none;margin-top:14px;"></div>
-    </section>
-  </main>
+      <div id="message" class="message"></div>
+    </div>
+  </div>
+
   <script src="/register.js"></script>
 </body>
 </html>

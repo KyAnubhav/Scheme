@@ -39,6 +39,7 @@ async function notifyEligibleUsers(schemeId) {
 
     try {
       await sendSchemeAlert(row.email, row.username, scheme);
+
       await db.request()
         .input("user_id", sql.Int, row.id)
         .input("scheme_id", sql.Int, schemeId)
@@ -194,6 +195,7 @@ router.post("/schemes", auth, requireRole("admin"), async (req, res) => {
     }
 
     for (const doc of required_documents) {
+      if (!doc.document_name) continue;
       await new sql.Request(tx)
         .input("scheme_id", sql.Int, schemeId)
         .input("document_name", sql.NVarChar(150), doc.document_name)
@@ -218,17 +220,21 @@ router.post("/schemes", auth, requireRole("admin"), async (req, res) => {
 
 router.delete("/schemes/:id", auth, requireRole("admin"), async (req, res) => {
   try {
-    const schemeId = Number(req.params.id);
-    if (!Number.isInteger(schemeId)) {
+    const db = await poolPromise;
+    const id = Number(req.params.id);
+    if (!Number.isFinite(id)) {
       return res.status(400).json({ success: false, message: "Invalid scheme id" });
     }
 
-    const db = await poolPromise;
-    await db.request()
-      .input("scheme_id", sql.Int, schemeId)
-      .query("DELETE FROM Schemes WHERE id = @scheme_id");
+    const result = await db.request()
+      .input("id", sql.Int, id)
+      .query("DELETE FROM Schemes WHERE id = @id");
 
-    res.json({ success: true, message: "Scheme removed" });
+    if (result.rowsAffected[0] === 0) {
+      return res.status(404).json({ success: false, message: "Scheme not found" });
+    }
+
+    res.json({ success: true, message: "Scheme deleted" });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
