@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard | Government Scheme Portal</title>
+  <link rel="stylesheet" href="/dashboard.css" />
+</head>
+<body>
+  <div class="page">
+    <div class="topbar">
+      <div class="brand">
+        <div class="eyebrow">Government Scheme Portal</div>
+        <h1>User dashboard</h1>
+        <p>Matched schemes are based on your saved profile.</p>
+      </div>
+      <div class="actions">
+        <button class="secondary" onclick="goProfile()">Profile</button>
+        <button class="ghost" onclick="reloadDashboard()">Refresh</button>
+        <button onclick="logout()">Logout</button>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card" style="grid-column: span 12;">
+        <div class="section-title">
+          <div>
+            <h2>Profile status</h2>
+            <p id="profileHint">Loading profile...</p>
+          </div>
+        </div>
+        <div id="profileSummary" class="notice">Please wait.</div>
+      </div>
+
+      <div class="card" style="grid-column: span 12;">
+        <div class="section-title">
+          <div>
+            <h2>Matched schemes</h2>
+            <p>These are the active schemes your profile currently fits.</p>
+          </div>
+          <span id="matchedCount" class="badge neutral">0 matched</span>
+        </div>
+        <div id="matchedSchemes" class="list"></div>
+      </div>
+
+      <div class="card" style="grid-column: span 12;">
+        <div class="section-title">
+          <div>
+            <h2>All active schemes</h2>
+            <p>Browse every active scheme in the portal.</p>
+          </div>
+          <span id="allCount" class="badge neutral">0 active</span>
+        </div>
+        <div id="allSchemes" class="list"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/dashboard.js"></script>
+</body>
+</html>

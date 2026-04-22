@@ -1,0 +1,224 @@
+/* 1. Global Reset & Body Theme */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    /* Theme Gradient: Black -> Dark Blue -> Purple */
+    background: linear-gradient(135deg, #000000 0%, #090979 40%, #7e22ce 100%);
+    background-attachment: fixed;
+    color: white;
+    padding: 20px;
+}
+
+.page {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+/* 2. Topbar / Navigation Area */
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding: 10px 0;
+}
+
+.brand .eyebrow {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #a78bfa; /* Purple accent */
+    margin-bottom: 4px;
+}
+
+.brand h1 {
+    font-size: 28px;
+    font-weight: 700;
+}
+
+.brand p {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 14px;
+}
+
+.actions {
+    display: flex;
+    gap: 10px;
+}
+
+/* 3. The Glassmorphism Card */
+.card {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 30px;
+    backdrop-filter: blur(15px);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+}
+
+.section-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 30px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 15px;
+}
+
+.section-title h2 {
+    font-size: 22px;
+    color: #a78bfa;
+}
+
+.badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.badge.neutral {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ccc;
+}
+
+/* 4. Profile Sections & Forms */
+.profile-section {
+    margin-bottom: 35px;
+}
+
+.profile-section h3 {
+    font-size: 16px;
+    color: #a78bfa;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.field-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.field label {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* 5. Inputs & Selects */
+input, select {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    padding: 10px 14px;
+    color: white;
+    outline: none;
+    transition: 0.3s;
+}
+
+input:focus, select:focus {
+    border-color: #a78bfa;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+select option {
+    background: #1e1b4b; /* Dark indigo for dropdown readability */
+    color: white;
+}
+
+/* 6. Toggles & Verification */
+.switch-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.toggle {
+    width: 40px;
+    height: 20px;
+    cursor: pointer;
+    accent-color: #a78bfa;
+}
+
+.notice {
+    font-size: 13px;
+    color: #a78bfa;
+    background: rgba(167, 139, 250, 0.1);
+    padding: 12px;
+    border-radius: 10px;
+    border-left: 3px solid #a78bfa;
+}
+
+/* 7. Buttons */
+button {
+    cursor: pointer;
+    border: none;
+    border-radius: 40px;
+    padding: 12px 24px;
+    font-weight: 600;
+    font-size: 14px;
+    transition: 0.3s;
+}
+
+/* Default / Save Button */
+button:not(.secondary):not(.ghost) {
+    background: #7e22ce;
+    background: linear-gradient(90deg, #7e22ce 0%, #090979 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(126, 34, 206, 0.3);
+}
+
+button:not(.secondary):not(.ghost):hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(167, 139, 250, 0.4);
+}
+
+button.secondary {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+button.ghost {
+    background: transparent;
+    color: #ccc;
+}
+
+button:hover {
+    opacity: 0.9;
+}
+
+/* 8. Messages */
+.message {
+    margin-top: 15px;
+    text-align: center;
+    font-size: 14px;
+}
+
+/* 9. Responsive Adjustments */
+@media (max-width: 600px) {
+    .topbar {
+        flex-direction: column;
+        text-align: center;
+        gap: 20px;
+    }
+    
+    .field-grid {
+        grid-template-columns: 1fr;
+    }
+}

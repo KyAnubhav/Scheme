@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin | Government Scheme Portal</title>
+  <link rel="stylesheet" href="/admin.css" />
+</head>
+<body>
+  <div class="page">
+    <div class="topbar">
+      <div class="brand">
+        <div class="eyebrow">Government Scheme Portal</div>
+        <h1>Admin dashboard</h1>
+        <p>Publish schemes and manage the active list.</p>
+      </div>
+      <div class="actions">
+        <button class="secondary" onclick="refreshAdmin()">Refresh</button>
+        <button class="ghost" onclick="logout()">Logout</button>
+      </div>
+    </div>
+
+    <div class="two-pane">
+      <div class="stack">
+        <div class="card">
+          <div class="section-title">
+            <div>
+              <h2>Control center</h2>
+              <p>Scheme basics first, then simple eligibility rules.</p>
+            </div>
+          </div>
+
+          <div class="field-grid">
+            <div class="field">
+              <label for="scheme_code">Scheme code</label>
+              <input id="scheme_code" type="text" placeholder="SCH-001" />
+            </div>
+            <div class="field">
+              <label for="scheme_name">Scheme name</label>
+              <input id="scheme_name" type="text" placeholder="Scheme name" />
+            </div>
+            <div class="field" style="grid-column: span 2;">
+              <label for="short_title">Short title</label>
+              <input id="short_title" type="text" placeholder="Short title" />
+            </div>
+            <div class="field">
+              <label for="ministry_id">Ministry</label>
+              <select id="ministry_id"></select>
+            </div>
+            <div class="field">
+              <label for="category_id">Category</label>
+              <select id="category_id"></select>
+            </div>
+            <div class="field">
+              <label for="beneficiary_type">Beneficiary type</label>
+              <select id="beneficiary_type"></select>
+            </div>
+            <div class="field">
+              <label for="application_mode">Application mode</label>
+              <select id="application_mode">
+                <option value="Online">Online</option>
+                <option value="Offline">Offline</option>
+                <option value="Both">Both</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="benefit_type">Benefit type</label>
+              <select id="benefit_type">
+                <option value="Financial assistance">Financial assistance</option>
+                <option value="Subsidy">Subsidy</option>
+                <option value="Scholarship">Scholarship</option>
+                <option value="Loan">Loan</option>
+                <option value="Service">Service</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="benefit_amount">Benefit amount</label>
+              <input id="benefit_amount" type="number" min="0" step="0.01" placeholder="Optional" />
+            </div>
+            <div class="field">
+              <label for="income_limit">Income limit</label>
+              <input id="income_limit" type="number" min="0" step="0.01" placeholder="Optional" />
+            </div>
+            <div class="field">
+              <label for="state_scope">State scope</label>
+              <input id="state_scope" type="text" placeholder="National or specific state/UT" />
+            </div>
+            <div class="field">
+              <label for="deadline">Deadline</label>
+              <input id="deadline" type="date" />
+            </div>
+            <div class="field">
+              <label for="official_website">Official website</label>
+              <input id="official_website" type="url" placeholder="https://..." />
+            </div>
+            <div class="field">
+              <label for="application_link">Application link</label>
+              <input id="application_link" type="url" placeholder="https://..." />
+            </div>
+            <div class="field" style="grid-column: span 2;">
+              <label for="documents_link">Documents link</label>
+              <input id="documents_link" type="url" placeholder="https://..." />
+            </div>
+            <div class="field" style="grid-column: span 2;">
+              <label for="description">Description</label>
+              <textarea id="description" placeholder="Short, clear description"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="section-title">
+            <div>
+              <h2>Eligibility rules</h2>
+              <p>Field is enough. Condition is picked automatically.</p>
+            </div>
+            <button class="secondary" onclick="addRule()">Add rule</button>
+          </div>
+          <div id="rules" class="stack"></div>
+          <div class="notice" style="margin-top:12px;">
+            Pick a field and enter the matching value.
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="section-title">
+            <div>
+              <h2>Publish scheme</h2>
+              <p id="msg">Ready.</p>
+            </div>
+            <button onclick="submitScheme()">Publish scheme</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="stack">
+        <div class="card">
+          <div class="section-title">
+            <div>
+              <h2>Statistics</h2>
+              <p>Simple portal snapshot.</p>
+            </div>
+          </div>
+          <div id="adminStats" class="stats"></div>
+        </div>
+
+        <div class="card">
+          <div class="section-title">
+            <div>
+              <h2>Published schemes</h2>
+              <p>Delete any published scheme when needed.</p>
+            </div>
+          </div>
+          <div id="schemes" class="stack"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/admin.js"></script>
+</body>
+</html>

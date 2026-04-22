@@ -1,3 +1,1 @@
-const otpStore = {};
-
-module.exports = otpStore;
+module.exports = {};

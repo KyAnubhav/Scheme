@@ -1,0 +1,13 @@
+Replace your repo's public/ folder with these files:
+- index.html
+- login.html
+- login.js
+- register.html
+- register.js
+- dashboard.html
+- dashboard.js
+- profile.html
+- profile.js
+- admin.html
+- admin.js
+- styles.css

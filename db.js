@@ -1,21 +1,27 @@
+require("dotenv").config();
 const sql = require("mssql");
 
 const config = {
-  user: "sa",
-  password: "dbms sql 1990",
-  server: "localhost\\SQLEXPRESS",   
-  database: "governmentScheme",
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  server: process.env.DB_SERVER || "127.0.0.1",
+  port: Number(process.env.DB_PORT || 1433),
+  database: process.env.DB_NAME || "governmentScheme",
   options: {
-    trustServerCertificate: true
-  }
+    encrypt: false,
+    trustServerCertificate: true,
+  },
+  pool: {
+    max: 10,
+    min: 0,
+    idleTimeoutMillis: 30000,
+  },
 };
 
-const pool = new sql.ConnectionPool(config)
-  .connect()
-  .then(pool => {
-    console.log("Connected to SQL Server");
-    return pool;
-  })
-  .catch(err => console.log("DB ERROR:", err));
+const poolPromise = new sql.ConnectionPool(config).connect();
 
-module.exports = { pool };
+poolPromise
+  .then(() => console.log("Connected to SQL Server"))
+  .catch((err) => console.log("DB ERROR:", err));
+
+module.exports = { sql, poolPromise };
