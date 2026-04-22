@@ -1,26 +1,107 @@
-/* 1. Profile Status Container */
-/* We turn the summary into a flexible grid of boxes */
-#profileSummary {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 15px;
-    background: transparent !important; /* Remove the old single box background */
-    border: none !important;
-    padding: 10px 0 !important;
-    width: 100%;
+/* 1. Global Reset & Body Theme */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* 2. Design for each individual component box */
-/* This styles the boxes injected for State, District, Income, etc. */
-#profileSummary div, 
-.profile-status-box {
+body {
+    min-height: 100vh;
+    /* Signature Theme: Black -> Dark Blue -> Purple */
+    background: linear-gradient(135deg, #000000 0%, #090979 40%, #7e22ce 100%);
+    background-attachment: fixed;
+    color: white;
+    padding: 20px;
+}
+
+.page {
+    max-width: 1300px;
+    margin: 0 auto;
+}
+
+/* 2. Topbar Navigation */
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding: 10px 0;
+}
+
+.brand .eyebrow {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #a78bfa;
+    margin-bottom: 4px;
+}
+
+.brand h1 {
+    font-size: 28px;
+    font-weight: 700;
+}
+
+.brand p {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 14px;
+}
+
+.actions {
+    display: flex;
+    gap: 12px;
+}
+
+/* 3. Main Dashboard Layout (Split Screen) */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 24px;
+    align-items: start;
+}
+
+/* 4. Glassmorphism Card Base */
+.card {
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    backdrop-filter: blur(15px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+}
+
+.section-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+}
+
+.section-title h2 {
+    font-size: 18px;
+    color: #a78bfa;
+}
+
+/* 5. Compact Profile Status (Small Sidebar) */
+.card:first-child {
+    grid-column: span 4; /* Takes up 4/12 columns */
+    padding: 20px;
+}
+
+/* Small Bento-style boxes */
+#profileSummary {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+#profileSummary div {
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 12px;
-    padding: 16px;
+    padding: 12px;
     text-align: center;
     transition: all 0.3s ease;
-    backdrop-filter: blur(5px);
+    font-size: 14px; /* Slightly smaller for the small box */
 }
 
 #profileSummary div:hover {
@@ -29,49 +110,134 @@
     transform: translateY(-3px);
 }
 
-/* 3. Font Increases and Labels */
-/* Styling for the text inside the boxes */
-#profileSummary span.label {
+/* Box Labels (State, District, etc) */
+#profileSummary strong {
     display: block;
-    font-size: 12px;
+    font-size: 10px;
     text-transform: uppercase;
     color: #a78bfa;
     letter-spacing: 1px;
-    margin-bottom: 8px;
+    margin-bottom: 4px;
     font-weight: 600;
 }
 
-#profileSummary span.value {
-    display: block;
-    font-size: 18px; /* Increased font size */
-    font-weight: 700;
+/* 6. Matched & Active Schemes (Big Main Area) */
+.card:nth-child(2),
+.card:nth-child(3) {
+    grid-column: span 8; /* Takes up 8/12 columns */
+    padding: 30px;
+}
+
+.list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.scheme-card {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-left: 5px solid #7e22ce; /* Highlight accent */
+    padding: 25px;
+    border-radius: 18px;
+    transition: 0.3s;
+}
+
+.scheme-card:hover {
+    background: rgba(255, 255, 255, 0.07);
+    transform: translateX(5px);
+}
+
+.scheme-card h3 {
+    font-size: 22px;
+    margin-bottom: 8px;
     color: #ffffff;
 }
 
-/* 4. Link Tag Enhancements */
-/* Making the links look like professional buttons or glowing tags */
-a {
-    color: #a78bfa;
+.scheme-card .meta {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 12px;
+}
+
+/* 7. Buttons & Links (Large & Glowing) */
+a, .btn {
+    color: #ffffff;
     text-decoration: none;
-    font-size: 16px; /* Slightly larger font */
     font-weight: 600;
-    padding: 4px 8px;
-    border-radius: 6px;
-    transition: all 0.3s ease;
+    font-size: 15px;
+    padding: 10px 20px;
+    border-radius: 10px;
+    background: rgba(167, 139, 250, 0.2);
+    border: 1px solid rgba(167, 139, 250, 0.3);
+    transition: 0.3s;
     display: inline-block;
+    margin-right: 10px;
 }
 
 a:hover {
-    color: #ffffff;
-    background: rgba(167, 139, 250, 0.2);
-    text-shadow: 0 0 10px rgba(167, 139, 250, 0.5);
+    background: #a78bfa;
+    box-shadow: 0 0 20px rgba(167, 139, 250, 0.5);
 }
 
-/* 5. Utility Classes for the JavaScript injection */
-/* If your JS uses specific classes for the profile data, use these */
-.status-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+.btn.secondary {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* 8. Badges */
+.badge {
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-block;
+}
+
+.badge.neutral { background: rgba(255, 255, 255, 0.1); color: #ccc; }
+.badge.good { background: rgba(34, 197, 94, 0.2); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.3); }
+.badge.warn { background: rgba(234, 179, 8, 0.2); color: #facc15; border: 1px solid rgba(234, 179, 8, 0.3); }
+
+/* 9. Topbar Buttons */
+button {
+    cursor: pointer;
+    border: none;
+    border-radius: 40px;
+    padding: 10px 22px;
+    font-weight: 600;
+    font-size: 14px;
+    transition: 0.3s;
+}
+
+button:not(.secondary):not(.ghost) {
+    background: linear-gradient(90deg, #7e22ce 0%, #090979 100%);
+    color: white;
+}
+
+button.secondary {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+button.ghost {
+    background: transparent;
+    color: #a78bfa;
+}
+
+button:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.2);
+}
+
+/* 10. Responsive Design */
+@media (max-width: 1024px) {
+    .card:first-child, 
+    .card:nth-child(2), 
+    .card:nth-child(3) {
+        grid-column: span 12; /* Stack everything on tablet/mobile */
+    }
+    
+    #profileSummary {
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    }
 }

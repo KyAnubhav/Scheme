@@ -29,7 +29,22 @@ function compare(actual, operatorName, value1, value2) {
 
   if (actual === null || actual === undefined || actual === "") return false;
 
-  if (op === "=") return toLower(actual) === toLower(value1);
+  if (op === "=") {
+  const a = String(actual ?? "").trim().toLowerCase();
+  const b = String(value1 ?? "").trim().toLowerCase();
+
+  const boolVals = ["true", "false", "1", "0", "yes", "no", "y", "n"];
+
+  // handle boolean comparison
+  if (boolVals.includes(a) || boolVals.includes(b)) {
+    const toBool = (v) =>
+      ["true", "1", "yes", "y"].includes(String(v).toLowerCase());
+
+    return toBool(a) === toBool(b);
+  }
+
+  return a === b;
+}
   if (op === "!=") return toLower(actual) !== toLower(value1);
 
   if (op === "<" || op === "<=" || op === ">" || op === ">=") {
